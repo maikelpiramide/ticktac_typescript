@@ -1,7 +1,7 @@
 import express,{Request,Response} from "express";
 import cors from "cors"
 import dotenv from "dotenv"
-
+import { initializeConnection } from "./context/MysqlConnector";
 dotenv.config()
 
 const app = express()
@@ -13,11 +13,12 @@ const options: cors.CorsOptions = {
         "https://master.d2achkkcebk0hr.amplifyapp.com/"
     ]
 }
+app.use(cors(options));
+app.use(express.json());
 
-app.get("/",(req:Request,res:Response)=>{
-    res.json({message:"Servidor corriendo para app ticktac"})
-})
-
+app.get("/", (req: Request, res: Response): void => {
+    res.send("App ticktac corriendo");
+});
 
 (async () => {
     try {
