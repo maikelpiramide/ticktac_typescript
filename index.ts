@@ -9,8 +9,7 @@ const api = "/api"
 
 const options: cors.CorsOptions = {
     origin:[
-        "http://localhost:5173",
-        "https://master.d2achkkcebk0hr.amplifyapp.com/"
+        "http://localhost:5173"
     ]
 }
 app.use(cors(options));
