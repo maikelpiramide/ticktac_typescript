@@ -1,6 +1,8 @@
 import { NextFunction,Request,response,Response } from "express";
 import jwt, {Secret} from "jsonwebtoken";
 import dotenv from "dotenv";
+import Usuario from "../../usuarios/domain/Usuario";
+import Cliente from "../../clientes/domain/Cliente";
 dotenv.config()
 
 const SECRET_KEY:Secret = "miClave$$"
@@ -9,19 +11,18 @@ const decode = (token:String)=>{
     return jwt.decode(token.valueOf())
 }
 
-const createTokenUser = (user:Usuario): string =>{
-
+const createTokenClient = (cliente:Cliente): string =>{
     const payload = {
-        id:user.id,
-        email:user.email,
-        rol:user.rol
-    }
-
-    return jwt.sign(payload,SECRET_KEY,{expiresIn:"1 days"})
+        id:cliente.id,
+        nombre:cliente.nombre,
+        email:cliente.email,
+        rol:cliente.rol
+    } 
+    return jwt.sign(payload,SECRET_KEY,{expiresIn:"2 days"})
 }
 
-const createTokenAdmin = (user:Usuario): string =>{
-    
+const createTokenUser = (user:Usuario): string =>{
+
     const payload = {
         id:user.id,
         email:user.email,
@@ -84,4 +85,4 @@ const isAdmin = async (req:Request,res:Response,next:NextFunction)=>{
     
 }
 
-export { decode,createTokenUser,createTokenAdmin,isAuth, isAdmin}
+export { decode,createTokenUser,createTokenClient,isAuth, isAdmin}
