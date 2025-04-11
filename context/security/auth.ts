@@ -2,7 +2,7 @@ import { NextFunction,Request,response,Response } from "express";
 import jwt, {Secret} from "jsonwebtoken";
 import dotenv from "dotenv";
 import Usuario from "../../usuarios/domain/Usuario";
-import Cliente from "../../clientes/domain/Cliente";
+import Cliente from "../../usuarios/domain/Cliente";
 dotenv.config()
 
 const SECRET_KEY:Secret = "miClave$$"

@@ -1,6 +1,7 @@
+import Admin from "./Admin";
 import Usuario from "./Usuario";
 
 export default interface UsuarioRepository {
     
-    registrar(usuario: Usuario): Promise<Usuario>;
+    registrarAdmin(admin: Admin): Promise<Admin>;
 }
