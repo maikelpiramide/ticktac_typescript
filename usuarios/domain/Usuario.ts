@@ -1,6 +1,6 @@
 import Admin from "./Admin";
 
-export default interface Usuario {
+export default class Usuario {
     id?: number;
     nombre?: string;
     email?: string;

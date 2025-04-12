@@ -1,8 +1,9 @@
 import Admin from "./Admin";
 
-export default interface Cliente{
+export default class Cliente{
     id?:number;
     nombre?:string;
+    password?:string;
     email?:string;
     rol?:string;
     administrador?:Admin;

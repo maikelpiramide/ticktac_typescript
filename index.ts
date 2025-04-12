@@ -2,6 +2,7 @@ import express,{Request,Response} from "express";
 import cors from "cors"
 import dotenv from "dotenv"
 import { initializeConnection } from "./context/MysqlConnector";
+import {router as routerUser} from "./usuarios/infrastructure/res/usuario.rest.controller";
 dotenv.config()
 
 const app = express()
@@ -18,6 +19,8 @@ app.use(express.json());
 app.get("/", (req: Request, res: Response): void => {
     res.send("App ticktac corriendo");
 });
+
+app.use(api,routerUser);
 
 (async () => {
     try {

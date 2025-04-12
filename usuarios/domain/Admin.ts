@@ -1,4 +1,4 @@
-export default interface Admin {
+export default class Admin {
     id?: number;
     email?: string;
     password?:string;

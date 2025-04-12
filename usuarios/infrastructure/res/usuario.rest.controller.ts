@@ -20,3 +20,16 @@ router.post("/admin/registro",async(req:Request,res:Response)=>{
     }
 
 })
+
+router.post("/admin/registro/isExist",async(req:Request,res:Response)=>{
+    const admin:Admin = req.body
+    try {
+        const existe = await usuarioUseCases.getByEmail(admin)
+        if(existe) res.status(500).json({error:true,message:"Admin existe"})
+        else res.status(200).json({error:false,message:"Admin no existe"})
+    }catch(error){
+        res.status(500).json({error:true,message:error})
+    }
+})
+
+export {router}

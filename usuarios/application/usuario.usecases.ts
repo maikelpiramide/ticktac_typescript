@@ -1,7 +1,9 @@
+import { allowedNodeEnvironmentFlags } from "process"
 import { hash,compare } from "../../context/security/encripted"
 import Admin from "../domain/Admin"
 import Usuario from "../domain/Usuario"
 import UsuarioRepository from "../domain/usuario.repository"
+import Cliente from "../domain/Cliente"
 export default class UsuarioUseCases{
 
     private usuarioRepository:UsuarioRepository
@@ -19,6 +21,10 @@ export default class UsuarioUseCases{
         admin.password = encriptedPassword
         const usuarioRegistrado = await this.usuarioRepository.registrarAdmin(admin)
         return usuarioRegistrado
+    }
+
+    async getByEmail(user:Usuario | Admin | Cliente):Promise<Usuario | Admin | Cliente | null>{
+        return await this.usuarioRepository.getByEmail(user);
     }
 
 }
