@@ -6,11 +6,7 @@ import UsuarioRepository from "../domain/usuario.repository"
 import Cliente from "../domain/Cliente"
 export default class UsuarioUseCases{
 
-    private usuarioRepository:UsuarioRepository
-
-    constructor(usuarioRepository:UsuarioRepository){
-        this.usuarioRepository = usuarioRepository 
-    }
+    constructor(private usuarioRepository:UsuarioRepository){}
     
     async registrarAdmnin(admin:Admin):Promise<Admin>{
 

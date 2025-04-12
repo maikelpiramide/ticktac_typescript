@@ -16,25 +16,30 @@
 
 
 -- Volcando estructura de base de datos para ticktac
+DROP DATABASE IF EXISTS `ticktac`;
 CREATE DATABASE IF NOT EXISTS `ticktac` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `ticktac`;
 
 -- Volcando estructura para tabla ticktac.admin
+DROP TABLE IF EXISTS `admin`;
 CREATE TABLE IF NOT EXISTS `admin` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `rol` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'ADMIN',
-  `id_contrato` int NOT NULL,
+  `id_plan` int NOT NULL,
+  `isAnual` tinyint NOT NULL,
+  `inicio_plan` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
-  KEY `FK_admin_contrato` (`id_contrato`),
-  CONSTRAINT `FK_admin_contrato` FOREIGN KEY (`id_contrato`) REFERENCES `contrato` (`id`)
+  KEY `FK_admin_contrato` (`id_plan`) USING BTREE,
+  CONSTRAINT `FK_admin_contrato` FOREIGN KEY (`id_plan`) REFERENCES `plan` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena el superusuario que sería el primer usuario de la empresa (gestiona usuarios trabajadores y clientes)';
 
 -- La exportación de datos fue deseleccionada.
 
 -- Volcando estructura para tabla ticktac.cliente
+DROP TABLE IF EXISTS `cliente`;
 CREATE TABLE IF NOT EXISTS `cliente` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL,
@@ -50,20 +55,23 @@ CREATE TABLE IF NOT EXISTS `cliente` (
 
 -- La exportación de datos fue deseleccionada.
 
--- Volcando estructura para tabla ticktac.contrato
-CREATE TABLE IF NOT EXISTS `contrato` (
+-- Volcando estructura para tabla ticktac.plan
+DROP TABLE IF EXISTS `plan`;
+CREATE TABLE IF NOT EXISTS `plan` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `precio` decimal(20,2) NOT NULL DEFAULT (0),
-  `descripcion` text NOT NULL,
-  `isAnual` tinyint NOT NULL DEFAULT (0),
+  `titulo` varchar(255) NOT NULL DEFAULT '',
+  `descripcion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `usuarios` int NOT NULL COMMENT 'cantidad de usuarios máxima admintida',
   `clientes` int NOT NULL COMMENT 'cantidad de clientes máxima admintida',
+  `precio_mensual` decimal(20,2) NOT NULL DEFAULT '0.00',
+  `precio_anual` decimal(20,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los precios con su tipo (mensual, anual)  y desripción';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los precios con su tipo (mensual, anual)  y desripción';
 
 -- La exportación de datos fue deseleccionada.
 
 -- Volcando estructura para tabla ticktac.usuario
+DROP TABLE IF EXISTS `usuario`;
 CREATE TABLE IF NOT EXISTS `usuario` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL,
