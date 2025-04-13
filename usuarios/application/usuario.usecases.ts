@@ -23,4 +23,18 @@ export default class UsuarioUseCases{
         return await this.usuarioRepository.getByEmail(user);
     }
 
+    async login(user:Usuario | Admin | Cliente):Promise<Usuario | Admin | Cliente | null>{
+
+        if(!user.email) throw new Error("El usuario no tiene email")
+        if(!user.password) throw new Error("El usuario no tiene contraseña")
+
+        const usuario = await this.usuarioRepository.getByEmail(user)
+        if(!usuario) throw new Error("El usuario no existe")
+        
+        const isPasswordValid = compare(user.password,String(usuario.password))
+        if(!isPasswordValid) throw new Error("La contraseña es incorrecta")
+        
+        return usuario;
+    }
+
 }
