@@ -34,7 +34,8 @@ router.post("/login",async(req:Request,res:Response)=>{
             } else {
                 token = createTokenUser(userLogueado as Usuario | Admin);
             }
-            res.status(200).json({error:false,message:"Usuario logeado correctamente",token:token})  
+            const {email,nombre}=userLogueado
+            res.status(200).json({error:false,message:"Usuario logeado correctamente",token:token,data:{email,nombre}})  
         }
     } catch (error) {
         console.log(error)

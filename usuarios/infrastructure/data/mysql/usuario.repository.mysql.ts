@@ -23,6 +23,7 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
                 const admin:Admin = {
                     id:resultAdmin[0].id,
                     email:resultAdmin[0].email,
+                    nombre:resultAdmin[0].nombre,
                     rol:resultAdmin[0].rol,
                     password:resultAdmin[0].password
                 }
@@ -44,6 +45,7 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
             if(resultUser.length > 0){
                 const usuario:Usuario = {
                     id:resultUser[0].id,
+                    nombre:resultUser[0].nombre,
                     email:resultUser[0].email,
                     password:resultUser[0].password,
                     rol:resultUser[0].rol
