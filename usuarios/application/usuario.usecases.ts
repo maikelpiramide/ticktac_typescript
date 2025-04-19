@@ -32,7 +32,7 @@ export default class UsuarioUseCases{
         if(!usuario) throw new Error("El usuario no existe")
         
         const isPasswordValid = compare(user.password,String(usuario.password))
-        if(!isPasswordValid) throw new Error("La contraseña es incorrecta")
+        if(!isPasswordValid) throw new Error("Usuario y/o contraseña incorrectos")
         
         return usuario;
     }
