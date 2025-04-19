@@ -1,5 +1,5 @@
 import express,{Request,Response} from "express"
-import { createTokenUser,createTokenClient } from "../../../context/security/auth"
+import { createTokenUser,createTokenClient, isAuth, isAdmin } from "../../../context/security/auth"
 import UsuarioRepositoryMyslq from "../data/mysql/usuario.repository.mysql"
 import UsuarioUseCases from "../../application/usuario.usecases"
 import Admin from "../../domain/Admin"
@@ -70,6 +70,27 @@ router.post("/admin/registro",async(req:Request,res:Response)=>{
 
 })
 
+router.post("/admin/newUsuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
+    const usuario:Usuario = req.body
+    const admin:Admin = req.body.auth
+    try {
+        const usuarioRegistrado = await usuarioUseCases.crearUsuario(usuario,admin)
+        res.status(201).json({error:false,message:"Usuario registrado correctamente",data:usuarioRegistrado})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error:true,message:error})
+    }
+})
 
+router.get("/admin/usuarios",isAuth,isAdmin,async(req:Request,res:Response)=>{
+    const admin:Admin = req.body.auth
+    try {
+        const usuarios = await usuarioUseCases.getUsuarios(admin)
+        res.status(200).json({error:false,message:"Usuarios obtenidos correctamente",data:usuarios})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error:true,message:error}) 
+    }
+})
 
 export {router}

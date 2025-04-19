@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
   CONSTRAINT `FK_admin_tipo_pago` FOREIGN KEY (`id_tipo_pago`) REFERENCES `tipo_pago` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena el superusuario que sería el primer usuario de la empresa (gestiona usuarios trabajadores y clientes)';
 
--- Volcando datos para la tabla ticktac.admin: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla ticktac.admin: ~2 rows (aproximadamente)
 DELETE FROM `admin`;
 INSERT INTO `admin` (`id`, `nombre`, `email`, `password`, `rol`, `id_plan`, `id_tipo_pago`, `inicio_plan`) VALUES
 	(2, 'admin', 'admin@gmail.com', '$2b$10$smuE08TX.u/H8Daq/bfMI.Zy8CO380r0DtJLX5wLHCDHIpL5HqWaG', 'ADMIN', 2, 2, '2025-04-13 19:24:45'),
@@ -53,15 +53,39 @@ CREATE TABLE IF NOT EXISTS `cliente` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `rol` varchar(50) NOT NULL DEFAULT 'CLIENT',
-  `id_admin` int NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`),
-  KEY `FK_cliente_administrador` (`id_admin`) USING BTREE,
-  CONSTRAINT `FK_client_admin` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`)
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacenan los clietnes de los usuarios (empresas)';
 
 -- Volcando datos para la tabla ticktac.cliente: ~0 rows (aproximadamente)
 DELETE FROM `cliente`;
+
+-- Volcando estructura para tabla ticktac.cliente_admin
+DROP TABLE IF EXISTS `cliente_admin`;
+CREATE TABLE IF NOT EXISTS `cliente_admin` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_admin` int NOT NULL DEFAULT '0',
+  `id_cliente` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `FK_cliente_admin_cliente` (`id_cliente`),
+  KEY `fk_cliente_admin_admin` (`id_admin`),
+  CONSTRAINT `fk_cliente_admin_admin` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`),
+  CONSTRAINT `FK_cliente_admin_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='relaciona los clientes con los administradores (empresas)';
+
+-- Volcando datos para la tabla ticktac.cliente_admin: ~0 rows (aproximadamente)
+DELETE FROM `cliente_admin`;
+
+-- Volcando estructura para tabla ticktac.estado
+DROP TABLE IF EXISTS `estado`;
+CREATE TABLE IF NOT EXISTS `estado` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena el estado de los tickets';
+
+-- Volcando datos para la tabla ticktac.estado: ~0 rows (aproximadamente)
+DELETE FROM `estado`;
 
 -- Volcando estructura para tabla ticktac.plan
 DROP TABLE IF EXISTS `plan`;
@@ -76,12 +100,30 @@ CREATE TABLE IF NOT EXISTS `plan` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los precios con su tipo (mensual, anual)  y desripción';
 
--- Volcando datos para la tabla ticktac.plan: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla ticktac.plan: ~3 rows (aproximadamente)
 DELETE FROM `plan`;
 INSERT INTO `plan` (`id`, `titulo`, `descripcion`, `usuarios`, `clientes`, `mensual`, `anual`) VALUES
 	(2, 'Plan básico', 'Plan perfecto para gestionar incidencias en PIMES y autónomos con una cantidad de clientes reducida', 3, 5, 9.99, 99.99),
 	(3, 'Plan premium', 'Plan perfecto para empresas de tamaño medio con una demanda de clientes media, además, incluye soporte técnico', 7, 10, 19.99, 219.99),
 	(4, 'Plan platinum', 'Plan perfecto para empresas con un número iliminado de usuarios y clientes, además, incluye soporte técnico', 9999999, 9999999, 99.99, 1149.99);
+
+-- Volcando estructura para tabla ticktac.ticket
+DROP TABLE IF EXISTS `ticket`;
+CREATE TABLE IF NOT EXISTS `ticket` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `asunto` varchar(50) NOT NULL DEFAULT '0',
+  `id_estado` int NOT NULL DEFAULT (0),
+  `id_cliente` int NOT NULL DEFAULT (0),
+  `id_usuario` int NOT NULL DEFAULT (0),
+  PRIMARY KEY (`id`),
+  KEY `FK_tiket_estado` (`id_estado`),
+  KEY `FK_tiket_cliente` (`id_cliente`),
+  CONSTRAINT `FK_tiket_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`),
+  CONSTRAINT `FK_tiket_estado` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los tickets';
+
+-- Volcando datos para la tabla ticktac.ticket: ~0 rows (aproximadamente)
+DELETE FROM `ticket`;
 
 -- Volcando estructura para tabla ticktac.tipo_pago
 DROP TABLE IF EXISTS `tipo_pago`;

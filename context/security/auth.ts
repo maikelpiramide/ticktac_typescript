@@ -3,6 +3,7 @@ import jwt, {Secret} from "jsonwebtoken";
 import dotenv from "dotenv";
 import Usuario from "../../usuarios/domain/Usuario";
 import Cliente from "../../usuarios/domain/Cliente";
+import Rol from "../../roles/domain/Rol";
 dotenv.config()
 
 const SECRET_KEY:Secret = "miClave$$"
@@ -70,7 +71,7 @@ const isAdmin = async (req:Request,res:Response,next:NextFunction)=>{
     try{
         
          const auth = req.body.auth
-        if(auth.rol == "admin"){
+        if(auth.rol == Rol.ADMIN){
             
             next();
 

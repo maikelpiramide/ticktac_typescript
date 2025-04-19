@@ -15,6 +15,20 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
         return admin;
     }
 
+    async crearUsuario(usuario: Usuario,admin:Admin): Promise<Usuario> {
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query("INSERT INTO usuario (nombre, email, password,id_admin) VALUES (?,?,?,?)",[usuario.nombre, usuario.email, usuario.password,admin.id]);
+        if(!result.insertId) throw new Error("No se pudo crear el usuario")
+        usuario.id = result.insertId;
+        return usuario;
+    }
+
+    async syncCliente(usuario: Usuario): Promise<Usuario> {
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query("insert into usuario SET nombre = ?, email = ?, password = ?, rol = ? WHERE id = ?",[usuario.nombre, usuario.email, usuario.password, usuario.rol, usuario.id]);
+        return usuario;
+    }
+
     async getByEmail(user: Usuario | Admin | Cliente): Promise<Usuario | Admin | Cliente | null> {
         const connection = getMySqlConnection();
     
@@ -49,11 +63,20 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
                     email:resultUser[0].email,
                     password:resultUser[0].password,
                     rol:resultUser[0].rol
-                } 
+                }
                 return usuario;
             }
         return null;
 
     }
     
+    async getUsuarios(admin:Admin): Promise<Usuario[]> {
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query("SELECT * FROM usuario where id_admin =?",admin.id);
+        return result.map((usuario:any) => ({
+            id:usuario.id,
+            nombre:usuario.nombre,
+            email:usuario.email,  
+        }))
+    }
 }
