@@ -54,4 +54,28 @@ export default class UsuarioUseCases{
     async getUsuarios(admin:Admin):Promise<Usuario[]>{
         return await this.usuarioRepository.getUsuarios(admin)
     }
+    async removeUsuario(usuario:Usuario):Promise<void>{
+        await this.usuarioRepository.removeUsuario(usuario)
+    }
+
+    async syncCliente(cliente:Cliente,usuario:Admin):Promise<Usuario>{
+        return await this.usuarioRepository.syncCliente(cliente,usuario)
+    }
+
+    async crearCliente(cliente:Cliente,usuario:Admin):Promise<Cliente>{
+        if(!cliente.email) throw new Error("El cliente no tiene email")
+        if(!cliente.password) throw new Error("El cliente no tiene contraseña")
+        if(!cliente.nombre) throw new Error("El cliente no tiene nombre")
+        const clienteExistente = await this.usuarioRepository.getByEmail(cliente)
+        if(clienteExistente){
+            return await this.syncCliente(clienteExistente as Cliente,usuario);
+        }
+        const encriptedPassword = hash(cliente.password)
+        cliente.password = encriptedPassword
+        return await this.usuarioRepository.crearCliente(cliente,usuario)
+    }
+
+    async getClientes(admin:Admin):Promise<Cliente[]>{
+        return await this.usuarioRepository.getClientes(admin)
+    }
 }

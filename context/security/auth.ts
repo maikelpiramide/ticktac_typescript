@@ -86,4 +86,23 @@ const isAdmin = async (req:Request,res:Response,next:NextFunction)=>{
     
 }
 
-export { decode,createTokenUser,createTokenClient,isAuth, isAdmin}
+const isUser = async (req:Request,res:Response,next:NextFunction)=>{
+    try{
+        
+         const auth = req.body.auth
+        if(auth.rol == Rol.USER){
+            
+            next();
+
+        }else{
+            res.status(401).json({message:"Usuario no autorizado"})
+        }
+
+    }catch(err){
+        console.error(err)
+        response.status(401).json({message:"Usuario no autorizado"})
+    }
+    
+}
+
+export { decode,createTokenUser,createTokenClient,isAuth, isAdmin,isUser}

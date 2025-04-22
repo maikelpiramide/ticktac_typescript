@@ -1,5 +1,5 @@
 import express,{Request,Response} from "express"
-import { createTokenUser,createTokenClient, isAuth, isAdmin } from "../../../context/security/auth"
+import { createTokenUser,createTokenClient, isAuth, isAdmin,isUser } from "../../../context/security/auth"
 import UsuarioRepositoryMyslq from "../data/mysql/usuario.repository.mysql"
 import UsuarioUseCases from "../../application/usuario.usecases"
 import Admin from "../../domain/Admin"
@@ -70,15 +70,26 @@ router.post("/admin/registro",async(req:Request,res:Response)=>{
 
 })
 
-router.post("/admin/newUsuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
-    const usuario:Usuario = req.body
-    const admin:Admin = req.body.auth
+router.post("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
+    const data = req.body
+    const auth = req.body.auth
+    const admin:Admin = {
+       id:auth.id,
+       email:auth.email 
+    }
+    const usuario:Usuario = {
+       nombre:data.nombre,
+       email:data.email,
+       password:data.password, 
+    }
     try {
         const usuarioRegistrado = await usuarioUseCases.crearUsuario(usuario,admin)
-        res.status(201).json({error:false,message:"Usuario registrado correctamente",data:usuarioRegistrado})
+        const {id,email,nombre}=usuarioRegistrado
+        res.status(201).json({error:false,message:"Usuario registrado correctamente",data:{id,email,nombre}})
     } catch (error) {
         console.log(error)
-        res.status(500).json({error:true,message:error})
+        const errorMessage = error instanceof Error ? error.message : 'Error al registrar el usuario';
+        res.status(500).json({error:true,message:errorMessage})
     }
 })
 
@@ -92,5 +103,46 @@ router.get("/admin/usuarios",isAuth,isAdmin,async(req:Request,res:Response)=>{
         res.status(500).json({error:true,message:error}) 
     }
 })
+router.delete("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
+    const usuario:Usuario = req.body
+})
 
+router.get("/admin/clientes",isAuth,isAdmin,async(req:Request,res:Response)=>{
+      const auth = req.body.auth
+      const admin:Admin = {
+         id:auth.id,
+         email:auth.email
+      }
+      try {
+          const clientes = await usuarioUseCases.getClientes(admin)
+          res.status(200).json({error:false,message:"Clientes obtenidos correctamente",data:clientes})
+      }catch(error){
+          console.log(error)
+          const errorMessage = error instanceof Error? error.message : 'No se ha podido obtener los clientes, intentelo de nuevo más tarde';
+          res.status(500).json({error:true,message:error})
+      }
+})
+router.post("/admin/cliente",isAuth,isAdmin,async(req:Request,res:Response)=>{
+    const data = req.body
+    const auth = req.body.auth
+    const admin:Admin = {
+       id:auth.id,
+       email:auth.email 
+    }
+    const cliente:Cliente = {
+       nombre:data.nombre,
+       email:data.email,
+       password:data.password, 
+    }
+    // res.json({cliente,admin})
+    try {
+        const clienteRegistrado = await usuarioUseCases.crearCliente(cliente,admin)
+        const {id,email,nombre}=clienteRegistrado
+        res.status(201).json({error:false,message:"Cliente registrado correctamente",data:{id,email,nombre}})
+    }catch(error){
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'Error al registrar el cliente, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:errorMessage})
+    }
+})
 export {router}

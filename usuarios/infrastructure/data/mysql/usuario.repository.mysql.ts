@@ -17,16 +17,32 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
 
     async crearUsuario(usuario: Usuario,admin:Admin): Promise<Usuario> {
         const connection = getMySqlConnection();
+
+        // Obtener el plan actual del admin y el número de usuarios
+        const [planResult]:any = await connection.query("SELECT p.usuarios FROM admin a JOIN plan p ON a.id_plan = p.id WHERE a.id = ?", [admin.id]);
+        const [usuariosCount]:any = await connection.query("SELECT COUNT(*) as total FROM usuario WHERE id_admin = ?", [admin.id]);
+        console.log(planResult,usuariosCount)
+        if (planResult.length === 0) throw new Error("No se encontró el plan del administrador");
+        
+        const limiteUsuarios = planResult[0].usuarios;
+        const usuariosActuales = usuariosCount[0].total;
+
+        if (usuariosActuales >= limiteUsuarios) {
+            throw new Error(`No puede crear más usuarios. Su plan actual tiene un límite de ${limiteUsuarios} usuarios`);
+        }
+
         const [result]:any = await connection.query("INSERT INTO usuario (nombre, email, password,id_admin) VALUES (?,?,?,?)",[usuario.nombre, usuario.email, usuario.password,admin.id]);
-        if(!result.insertId) throw new Error("No se pudo crear el usuario")
+        if(!result.insertId) throw new Error("No se pudo crear el usuario");
         usuario.id = result.insertId;
         return usuario;
     }
 
-    async syncCliente(usuario: Usuario): Promise<Usuario> {
+    async syncCliente(cliente: Cliente,admin:Admin): Promise<Cliente> {
         const connection = getMySqlConnection();
-        const [result]:any = await connection.query("insert into usuario SET nombre = ?, email = ?, password = ?, rol = ? WHERE id = ?",[usuario.nombre, usuario.email, usuario.password, usuario.rol, usuario.id]);
-        return usuario;
+
+        const [result]:any = await connection.query("insert into cliente_admin (id_admin,id_cliente) values (?,?)",[admin.id,cliente.id]);
+        if(!result.insertId) throw new Error("No se pudo crear el cliente");    
+        return cliente;
     }
 
     async getByEmail(user: Usuario | Admin | Cliente): Promise<Usuario | Admin | Cliente | null> {
@@ -72,7 +88,27 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     
     async getUsuarios(admin:Admin): Promise<Usuario[]> {
         const connection = getMySqlConnection();
-        const [result]:any = await connection.query("SELECT * FROM usuario where id_admin =?",admin.id);
+        const [result]:any = await connection.query("SELECT * FROM usuario where id_admin =? and activo = ?",[admin.id,true]);
+        return result.map((usuario:any) => ({
+            id:usuario.id,
+            nombre:usuario.nombre,
+            email:usuario.email,  
+        }))
+    }
+    
+    async crearCliente(cliente: Cliente,admin:Admin): Promise<Cliente> {
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query("INSERT INTO cliente (nombre, email, password) VALUES (?,?,?)",[cliente.nombre, cliente.email, cliente.password]);
+        if(!result.insertId) throw new Error("No se pudo crear el cliente");
+        cliente.id = result.insertId;
+        const [resultEnlace]:any = await connection.query("INSERT INTO cliente_admin (id_cliente,id_admin) VALUES (?,?)",[cliente.id, admin.id]);
+        if(!resultEnlace.insertId) throw new Error("No se pudo crear el cliente");
+        return cliente;
+    }
+
+    async getClientes(admin:Admin): Promise<Usuario[]> {
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query("SELECT * FROM admin_clieinte where id_admin =?",admin.id);
         return result.map((usuario:any) => ({
             id:usuario.id,
             nombre:usuario.nombre,
