@@ -104,7 +104,36 @@ router.get("/admin/usuarios",isAuth,isAdmin,async(req:Request,res:Response)=>{
     }
 })
 router.delete("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
-    const usuario:Usuario = req.body
+    const data = req.body
+    const usuario:Usuario = {
+        id:data.id,
+    }
+    try {
+        await usuarioUseCases.removeUsuario(usuario)
+        res.status(200).json({error:false,message:"Usuario eliminado correctamente"})
+    }catch(error){
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'Error al eliminar el usuario, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:errorMessage})
+    }
+})
+router.put("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
+    const data = req.body
+    const usuario:Usuario = {
+        id:data.id,
+        nombre:data.nombre,
+        email:data.email,
+        password:data.password ?? null,
+    }
+    try {
+         const userdb:Usuario = await usuarioUseCases.updateUsuario(usuario)
+         const {id,email,nombre}=userdb
+        res.status(200).json({error:false,message:"Usuario actualizado correctamente",data:{id,email,nombre}})
+    }catch(error){
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'Error al actualizar el usuario, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:errorMessage})
+    }
 })
 
 router.get("/admin/clientes",isAuth,isAdmin,async(req:Request,res:Response)=>{

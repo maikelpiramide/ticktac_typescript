@@ -19,8 +19,9 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
         const connection = getMySqlConnection();
 
         // Obtener el plan actual del admin y el número de usuarios
+        
         const [planResult]:any = await connection.query("SELECT p.usuarios FROM admin a JOIN plan p ON a.id_plan = p.id WHERE a.id = ?", [admin.id]);
-        const [usuariosCount]:any = await connection.query("SELECT COUNT(*) as total FROM usuario WHERE id_admin = ?", [admin.id]);
+        const [usuariosCount]:any = await connection.query("SELECT COUNT(*) as total FROM usuario WHERE id_admin = ? and activo = ?", [admin.id,true]);
         console.log(planResult,usuariosCount)
         if (planResult.length === 0) throw new Error("No se encontró el plan del administrador");
         
@@ -31,9 +32,22 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
             throw new Error(`No puede crear más usuarios. Su plan actual tiene un límite de ${limiteUsuarios} usuarios`);
         }
 
+        const user = await this.getByEmail(usuario)
+        if(user){
+            const [userResult]:any = await connection.query("update usuario set activo = ? where email = ?", [true,user.email]);
+            if(!userResult.affectedRows) throw new Error("No se pudo actualizar el usuario");
+            return user;
+        };
+
         const [result]:any = await connection.query("INSERT INTO usuario (nombre, email, password,id_admin) VALUES (?,?,?,?)",[usuario.nombre, usuario.email, usuario.password,admin.id]);
         if(!result.insertId) throw new Error("No se pudo crear el usuario");
         usuario.id = result.insertId;
+        return usuario;
+    }
+    async updateUsuario(usuario: Usuario): Promise<Usuario> {
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query("UPDATE usuario SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password,usuario.id]);
+        if(!result.affectedRows) throw new Error("No se pudo actualizar el usuario");
         return usuario;
     }
 
@@ -94,6 +108,12 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
             nombre:usuario.nombre,
             email:usuario.email,  
         }))
+    }
+
+    async removeUsuario(usuario: Usuario): Promise<void> {
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query("UPDATE usuario SET activo =? WHERE id =?",[false,usuario.id]);
+        if(!result.affectedRows) throw new Error("No se pudo eliminar el usuario");
     }
     
     async crearCliente(cliente: Cliente,admin:Admin): Promise<Cliente> {

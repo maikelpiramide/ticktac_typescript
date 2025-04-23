@@ -42,13 +42,13 @@ export default class UsuarioUseCases{
         if(!usuario.password) throw new Error("El usuario no tiene contraseña")
         if(!usuario.nombre) throw new Error("El usuario no tiene nombre")
 
-        const usuarioExistente = await this.usuarioRepository.getByEmail(usuario)
-        if(usuarioExistente) throw new Error("Ya existe un usuario con ese email")
-
         const encriptedPassword = hash(usuario.password)
         usuario.password = encriptedPassword
         
         return await this.usuarioRepository.crearUsuario(usuario,admin)
+    }
+    async updateUsuario(usuario: Usuario): Promise<Usuario> {
+        return await this.usuarioRepository.updateUsuario(usuario);
     }
 
     async getUsuarios(admin:Admin):Promise<Usuario[]>{
