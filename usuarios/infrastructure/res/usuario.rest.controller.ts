@@ -125,6 +125,7 @@ router.put("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
         email:data.email,
         password:data.password ?? null,
     }
+    // res.json(usuario)
     try {
          const userdb:Usuario = await usuarioUseCases.updateUsuario(usuario)
          const {id,email,nombre}=userdb
@@ -151,6 +152,7 @@ router.get("/admin/clientes",isAuth,isAdmin,async(req:Request,res:Response)=>{
           res.status(500).json({error:true,message:error})
       }
 })
+
 router.post("/admin/cliente",isAuth,isAdmin,async(req:Request,res:Response)=>{
     const data = req.body
     const auth = req.body.auth
@@ -161,9 +163,8 @@ router.post("/admin/cliente",isAuth,isAdmin,async(req:Request,res:Response)=>{
     const cliente:Cliente = {
        nombre:data.nombre,
        email:data.email,
-       password:data.password, 
+       password:data.password,
     }
-    // res.json({cliente,admin})
     try {
         const clienteRegistrado = await usuarioUseCases.crearCliente(cliente,admin)
         const {id,email,nombre}=clienteRegistrado
@@ -173,5 +174,27 @@ router.post("/admin/cliente",isAuth,isAdmin,async(req:Request,res:Response)=>{
         const errorMessage = error instanceof Error? error.message : 'Error al registrar el cliente, intentelo de nuevo más tarde';
         res.status(500).json({error:true,message:errorMessage})
     }
+})
+
+router.delete("/admin/cliente",isAuth,isAdmin,async(req:Request,res:Response)=>{
+    const data = req.body
+    const cliente:Cliente = {
+        id:data.id,
+    }
+    const auth = req.body.auth
+    const admin:Admin = {
+       id:auth.id,
+       email:auth.email
+    }
+    
+    try {
+        await usuarioUseCases.removeCliente(cliente,admin)
+        res.status(200).json({error:false,message:"Cliente eliminado correctamente"})
+    }catch(error){
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'Error al eliminar el cliente, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:errorMessage})
+    }
+
 })
 export {router}

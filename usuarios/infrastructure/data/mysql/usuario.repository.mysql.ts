@@ -46,15 +46,39 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     }
     async updateUsuario(usuario: Usuario): Promise<Usuario> {
         const connection = getMySqlConnection();
-        const [result]:any = await connection.query("UPDATE usuario SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password,usuario.id]);
+        if(usuario.password !== null){
+            const [result]:any = await connection.query("UPDATE usuario SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password,usuario.id]);
+            if(!result.affectedRows) throw new Error("No se pudo actualizar el usuario");
+            return usuario;
+        }
+        const [result]:any = await connection.query("UPDATE usuario SET nombre =?, email =? WHERE id =?",[usuario.nombre, usuario.email,usuario.id]);
         if(!result.affectedRows) throw new Error("No se pudo actualizar el usuario");
         return usuario;
+        
     }
 
     async syncCliente(cliente: Cliente,admin:Admin): Promise<Cliente> {
         const connection = getMySqlConnection();
 
-        const [result]:any = await connection.query("insert into cliente_admin (id_admin,id_cliente) values (?,?)",[admin.id,cliente.id]);
+        const query = `
+            SELECT c.email,ca.activo FROM cliente_admin AS ca
+            JOIN cliente AS c
+            ON c.id = ca.id_cliente
+            WHERE ca.id_admin = ?
+            and c.email = ?
+            `
+
+        const [comprueba]:any = await connection.query(query,[admin.id,cliente.email])
+        console.log("COMPREBA",comprueba)
+        if(comprueba.length > 0){
+            if(comprueba[0].activo == 0){
+                const [result]:any = await connection.query("update cliente_admin set activo =?, nombre_cliente = ? where id_admin =? and id_cliente =?", [true,cliente.nombre,admin.id,cliente.id]);
+                if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");
+                return cliente;
+            }
+        }
+
+        const [result]:any = await connection.query("insert into cliente_admin (id_admin,id_cliente,nombre_cliente) values (?,?,?)",[admin.id,cliente.id,cliente.nombre]);
         if(!result.insertId) throw new Error("No se pudo crear el cliente");    
         return cliente;
     }
@@ -116,23 +140,67 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
         if(!result.affectedRows) throw new Error("No se pudo eliminar el usuario");
     }
     
+    async comprobarNumClientes(admin: Admin): Promise<boolean> {
+        const planQuery = `
+            SELECT p.clientes FROM admin a JOIN plan p ON a.id_plan = p.id WHERE a.id =?
+        `;
+        const [planResult]:any = await getMySqlConnection().query(planQuery, [admin.id]);
+        if (planResult.length === 0) throw new Error("No se encontró el plan del administrador");
+        const limiteClientes = planResult[0].clientes;
+
+        const clientesQuery = `
+            SELECT COUNT(*) as total FROM cliente_admin WHERE id_admin =? and activo =?
+        `;
+        const [clientesResult]:any = await getMySqlConnection().query(clientesQuery, [admin.id,true]);
+        const clientesActuales = clientesResult[0].total;
+        console.warn(clientesActuales,limiteClientes,clientesResult)
+        return clientesActuales < limiteClientes;
+    }
+
     async crearCliente(cliente: Cliente,admin:Admin): Promise<Cliente> {
         const connection = getMySqlConnection();
         const [result]:any = await connection.query("INSERT INTO cliente (nombre, email, password) VALUES (?,?,?)",[cliente.nombre, cliente.email, cliente.password]);
         if(!result.insertId) throw new Error("No se pudo crear el cliente");
         cliente.id = result.insertId;
-        const [resultEnlace]:any = await connection.query("INSERT INTO cliente_admin (id_cliente,id_admin) VALUES (?,?)",[cliente.id, admin.id]);
+        const [resultEnlace]:any = await connection.query("INSERT INTO cliente_admin (id_cliente,id_admin,nombre_cliente) VALUES (?,?,?)",[cliente.id, admin.id,cliente.nombre]);
         if(!resultEnlace.insertId) throw new Error("No se pudo crear el cliente");
         return cliente;
     }
 
     async getClientes(admin:Admin): Promise<Usuario[]> {
         const connection = getMySqlConnection();
-        const [result]:any = await connection.query("SELECT * FROM admin_clieinte where id_admin =?",admin.id);
+        const query = `
+            SELECT ca.id,cl.id as id_cliente, ca.nombre_cliente as nombre, cl.email FROM cliente_admin AS ca
+            JOIN admin AS ad
+            ON ad.id = ca.id_admin
+            JOIN cliente AS cl
+            ON cl.id = ca.id_cliente
+            where ad.id = ?
+            and ca.activo = 1
+            
+        `
+        const [result]:any = await connection.query(query,admin.id);
         return result.map((usuario:any) => ({
             id:usuario.id,
+            idCliente:usuario.id_cliente,
             nombre:usuario.nombre,
-            email:usuario.email,  
+            email:usuario.email,
         }))
+    }
+    async removeCliente(cliente: Cliente,admin:Admin): Promise<void> {
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query("UPDATE cliente_admin SET activo =? WHERE id_cliente =? and id_admin = ?",[false,cliente.id,admin.id]);
+        console.log(result)
+        if(!result.affectedRows) throw new Error("No se pudo eliminar el cliente");
+    }
+    async updateCliente(cliente: Cliente,admin:Admin): Promise<Cliente> {
+        const connection = getMySqlConnection();
+        if(cliente.password !== null){
+            const [result]:any = await connection.query("UPDATE cliente SET nombre =?, email =?, password =? WHERE id =?",[cliente.nombre, cliente.email,cliente.password,cliente.id]);
+            if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");
+            return cliente;
+        }
+        const [result]:any = await connection.query("UPDATE cliente_admin SET nombre_cliente =? WHERE id_cliente =? and id_admin = ?",[cliente.nombre, cliente.id,admin.id]);
+     
     }
 }

@@ -10,6 +10,9 @@ export default interface UsuarioRepository {
     getUsuarios(admin:Admin): Promise<Usuario[]>;
     updateUsuario(usuario: Usuario): Promise<Usuario>;
     syncCliente(cliente: Cliente,admin:Admin): Promise<Cliente>;
+    comprobarNumClientes(admin:Admin): Promise<boolean>;
     crearCliente(cliente: Cliente,admin:Admin): Promise<Cliente>;
+    removeCliente(cliente: Cliente,admin:Admin): Promise<void>;
     getClientes(admin:Admin): Promise<Cliente[]>;
+    updateCliente(cliente: Cliente,admin:Admin): Promise<Cliente>;
 }

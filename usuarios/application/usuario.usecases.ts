@@ -62,12 +62,22 @@ export default class UsuarioUseCases{
         return await this.usuarioRepository.syncCliente(cliente,usuario)
     }
 
+    async comprobarNumClientes(admin:Admin):Promise<boolean>{
+        return await this.usuarioRepository.comprobarNumClientes(admin)
+    }
+
     async crearCliente(cliente:Cliente,usuario:Admin):Promise<Cliente>{
         if(!cliente.email) throw new Error("El cliente no tiene email")
         if(!cliente.password) throw new Error("El cliente no tiene contraseña")
         if(!cliente.nombre) throw new Error("El cliente no tiene nombre")
+
+        const canCrate = await this.comprobarNumClientes(usuario)
+        console.warn(canCrate)
+        if(!canCrate) throw new Error("No se puede crear más clientes con el plan actual")
+
         const clienteExistente = await this.usuarioRepository.getByEmail(cliente)
         if(clienteExistente){
+            clienteExistente.nombre = cliente.nombre
             return await this.syncCliente(clienteExistente as Cliente,usuario);
         }
         const encriptedPassword = hash(cliente.password)
@@ -77,5 +87,13 @@ export default class UsuarioUseCases{
 
     async getClientes(admin:Admin):Promise<Cliente[]>{
         return await this.usuarioRepository.getClientes(admin)
+    }
+
+    async removeCliente(cliente:Cliente,admin:Admin):Promise<void>{
+        await this.usuarioRepository.removeCliente(cliente,admin);
+    }
+    
+    async updateCliente(cliente:Cliente,admin:Admin):Promise<Cliente>{
+        return await this.usuarioRepository.updateCliente(cliente,admin);
     }
 }
