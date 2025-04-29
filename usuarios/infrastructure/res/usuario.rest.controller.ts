@@ -6,6 +6,7 @@ import Admin from "../../domain/Admin"
 import { Plan } from "../../../planes/domain/Plan"
 import Usuario from "../../domain/Usuario"
 import Cliente from "../../domain/Cliente"
+import Rol from "../../../roles/domain/Rol"
 
 const usuarioUseCases:UsuarioUseCases = new UsuarioUseCases(new UsuarioRepositoryMyslq()) 
 
@@ -196,5 +197,60 @@ router.delete("/admin/cliente",isAuth,isAdmin,async(req:Request,res:Response)=>{
         res.status(500).json({error:true,message:errorMessage})
     }
 
+})
+router.put("/admin/cliente",isAuth,isAdmin,async(req:Request,res:Response)=>{
+    const data = req.body
+    const cliente:Cliente = {
+        id:data.id,
+        nombre:data.nombre,
+        email:data.email,
+        password:data.password?? null,
+    }
+    const auth = req.body.auth
+    const admin:Admin = {
+       id:auth.id,
+       email:auth.email
+    }
+    try {
+        const clientedb:Cliente = await usuarioUseCases.updateCliente(cliente,admin)
+        const {id,email,nombre}=clientedb
+        res.status(200).json({error:false,message:"Cliente actualizado correctamente",data:{id,email,nombre}})
+    }catch(error){
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'Error al actualizar el cliente, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:errorMessage})
+    }
+})
+router.put("/profile",isAuth,async(req:Request,res:Response)=>{
+    const data = req.body
+    
+    const usuario:Usuario | Admin | Cliente = {
+        id:data.auth.id,
+        nombre:data.nombre,
+        email:data.email,
+        password:data.password?? null,
+    }
+    try {
+        let userdb:Usuario | Admin | Cliente;
+        let token = null;
+        if(req.body.auth.rol === Rol.ADMIN){
+            userdb = await usuarioUseCases.updatePerfil(usuario as Admin)
+            token = createTokenUser(userdb as Admin)
+        }
+        if(req.body.auth.rol === Rol.CLIENT){
+            userdb = await usuarioUseCases.updatePerfil(usuario as Cliente)
+            token = createTokenClient(userdb as Cliente)
+        }
+        if(req.body.auth.rol === Rol.USER){
+            userdb = await usuarioUseCases.updatePerfil(usuario as Usuario)
+            token = createTokenUser(userdb as Usuario)
+        }
+        
+        res.status(200).json({error:false,message:"Usuario actualizado correctamente",token})
+    }catch(error){
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'Error al actualizar el usuario, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:errorMessage})
+    }
 })
 export {router}

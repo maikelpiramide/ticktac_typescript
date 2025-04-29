@@ -15,4 +15,5 @@ export default interface UsuarioRepository {
     removeCliente(cliente: Cliente,admin:Admin): Promise<void>;
     getClientes(admin:Admin): Promise<Cliente[]>;
     updateCliente(cliente: Cliente,admin:Admin): Promise<Cliente>;
+    updatePerfil(usuario: Usuario | Admin | Cliente): Promise<Usuario | Admin | Cliente>;
 }

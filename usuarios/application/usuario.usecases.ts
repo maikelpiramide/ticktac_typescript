@@ -96,4 +96,7 @@ export default class UsuarioUseCases{
     async updateCliente(cliente:Cliente,admin:Admin):Promise<Cliente>{
         return await this.usuarioRepository.updateCliente(cliente,admin);
     }
+    async updatePerfil(usuario: Usuario | Admin | Cliente): Promise<Usuario | Admin | Cliente> {
+        return await this.usuarioRepository.updatePerfil(usuario);
+    }
 }

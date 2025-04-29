@@ -195,12 +195,57 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     }
     async updateCliente(cliente: Cliente,admin:Admin): Promise<Cliente> {
         const connection = getMySqlConnection();
+        const c = await this.getByEmail(cliente)
         if(cliente.password !== null){
             const [result]:any = await connection.query("UPDATE cliente SET nombre =?, email =?, password =? WHERE id =?",[cliente.nombre, cliente.email,cliente.password,cliente.id]);
-            if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");
+            if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");   
+            const [resultEnlace]:any = await connection.query("UPDATE cliente_admin SET nombre_cliente =? WHERE id_cliente =? and id_admin =?",[cliente.nombre, cliente.id,admin.id]);
+            if(!resultEnlace.affectedRows) throw new Error("No se pudo actualizar el cliente");
+            return cliente;
+        }
+        if(c?.email !== cliente.email){
+            const [result]:any = await connection.query("UPDATE cliente SET nombre =?, email =? WHERE id =?",[cliente.nombre, cliente.email,cliente.id]);
+            if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");   
+            const [resultEnlace]:any = await connection.query("UPDATE cliente_admin SET nombre_cliente =? WHERE id_cliente =? and id_admin =?",[cliente.nombre, cliente.id,admin.id]);
+            if(!resultEnlace.affectedRows) throw new Error("No se pudo actualizar el cliente");
             return cliente;
         }
         const [result]:any = await connection.query("UPDATE cliente_admin SET nombre_cliente =? WHERE id_cliente =? and id_admin = ?",[cliente.nombre, cliente.id,admin.id]);
-     
+        console.warn(cliente)
+        console.log(result)
+        if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");
+        return cliente;
     }
+    async updatePerfil(usuario: Usuario | Admin | Cliente): Promise<Usuario | Admin | Cliente> {
+        const connection = getMySqlConnection();
+        if(usuario instanceof Admin){
+            if(usuario.password !== null){
+                const [result]:any = await connection.query("UPDATE admin SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password, usuario.id]);
+                if(!result.affectedRows) throw new Error("No se pudo actualizar el admin");
+                return usuario;
+            }
+            const [result]:any = await connection.query("UPDATE admin SET nombre =?, email =? WHERE id =?",[usuario.nombre, usuario.email, usuario.id]);
+            if(!result.affectedRows) throw new Error("No se pudo actualizar el admin");
+            return usuario;
+        }
+        if(usuario instanceof Cliente){
+            if(usuario.password !== null){
+                const [result]:any = await connection.query("UPDATE cliente SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password, usuario.id]);
+                if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");
+                return usuario;
+            }
+            const [result]:any = await connection.query("UPDATE cliente SET nombre =?, email =? WHERE id =?",[usuario.nombre, usuario.email, usuario.id]);
+            if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");
+            return usuario;
+        }
+        if(usuario.password !== null){
+            const [result]:any = await connection.query("UPDATE usuario SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password, usuario.id]);
+            if(!result.affectedRows) throw new Error("No se pudo actualizar el usuario");
+            return usuario;
+        }
+        const [result]:any = await connection.query("UPDATE usuario SET nombre =?, email =? WHERE id =?",[usuario.nombre, usuario.email, usuario.id]);
+        if(!result.affectedRows) throw new Error("No se pudo actualizar el usuario");
+        return usuario;
+    }
+
 }

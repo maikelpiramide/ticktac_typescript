@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import Usuario from "../../usuarios/domain/Usuario";
 import Cliente from "../../usuarios/domain/Cliente";
 import Rol from "../../roles/domain/Rol";
+import Admin from "../../usuarios/domain/Admin";
 dotenv.config()
 
 const SECRET_KEY:Secret = "miClave$$"
@@ -22,10 +23,11 @@ const createTokenClient = (cliente:Cliente): string =>{
     return jwt.sign(payload,SECRET_KEY,{expiresIn:"2 days"})
 }
 
-const createTokenUser = (user:Usuario): string =>{
+const createTokenUser = (user:Usuario | Admin): string =>{
 
     const payload = {
         id:user.id,
+        nombre:user.nombre,
         email:user.email,
         rol:user.rol
     }
