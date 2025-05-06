@@ -4,6 +4,7 @@ import { getMySqlConnection } from "../../../../context/MysqlConnector";
 import { ResultSetHeader } from "mysql2";
 import Usuario from "../../../domain/Usuario";
 import Cliente from "../../../domain/Cliente";
+import Rol from "../../../../roles/domain/Rol";
 export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     
     async registrarAdmin(admin: Admin): Promise<Admin> {
@@ -218,7 +219,8 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     }
     async updatePerfil(usuario: Usuario | Admin | Cliente): Promise<Usuario | Admin | Cliente> {
         const connection = getMySqlConnection();
-        if(usuario instanceof Admin){
+        console.warn( 'es admin: ', usuario.rol)
+        if(usuario.rol == Rol.ADMIN){
             if(usuario.password !== null){
                 const [result]:any = await connection.query("UPDATE admin SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password, usuario.id]);
                 if(!result.affectedRows) throw new Error("No se pudo actualizar el admin");
@@ -228,7 +230,7 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
             if(!result.affectedRows) throw new Error("No se pudo actualizar el admin");
             return usuario;
         }
-        if(usuario instanceof Cliente){
+        if(usuario.rol == Rol.CLIENT){
             if(usuario.password !== null){
                 const [result]:any = await connection.query("UPDATE cliente SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password, usuario.id]);
                 if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");
@@ -238,6 +240,7 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
             if(!result.affectedRows) throw new Error("No se pudo actualizar el cliente");
             return usuario;
         }
+        
         if(usuario.password !== null){
             const [result]:any = await connection.query("UPDATE usuario SET nombre =?, email =?, password =? WHERE id =?",[usuario.nombre, usuario.email, usuario.password, usuario.id]);
             if(!result.affectedRows) throw new Error("No se pudo actualizar el usuario");

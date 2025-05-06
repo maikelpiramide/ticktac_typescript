@@ -228,19 +228,24 @@ router.put("/profile",isAuth,async(req:Request,res:Response)=>{
         nombre:data.nombre,
         email:data.email,
         password:data.password?? null,
+        rol:data.auth.rol
     }
     try {
         let userdb:Usuario | Admin | Cliente;
         let token = null;
-        if(req.body.auth.rol === Rol.ADMIN){
+        console.warn(req.body.auth.rol)
+        if(usuario.rol === Rol.ADMIN){
+            console.warn("admin")
             userdb = await usuarioUseCases.updatePerfil(usuario as Admin)
             token = createTokenUser(userdb as Admin)
         }
-        if(req.body.auth.rol === Rol.CLIENT){
+        if(usuario.rol === Rol.CLIENT){
+            console.warn("cliente")
             userdb = await usuarioUseCases.updatePerfil(usuario as Cliente)
             token = createTokenClient(userdb as Cliente)
         }
-        if(req.body.auth.rol === Rol.USER){
+        if(usuario.rol === Rol.USER){
+            console.warn("usuario")
             userdb = await usuarioUseCases.updatePerfil(usuario as Usuario)
             token = createTokenUser(userdb as Usuario)
         }

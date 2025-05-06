@@ -97,6 +97,7 @@ export default class UsuarioUseCases{
         return await this.usuarioRepository.updateCliente(cliente,admin);
     }
     async updatePerfil(usuario: Usuario | Admin | Cliente): Promise<Usuario | Admin | Cliente> {
+        if(usuario.password != null) usuario.password = hash(usuario.password)
         return await this.usuarioRepository.updatePerfil(usuario);
     }
 }

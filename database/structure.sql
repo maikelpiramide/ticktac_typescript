@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
 -- Dumping data for table ticktac.admin: ~2 rows (approximately)
 DELETE FROM `admin`;
 INSERT INTO `admin` (`id`, `nombre`, `email`, `password`, `rol`, `id_plan`, `id_tipo_pago`, `inicio_plan`, `activo`) VALUES
-	(2, 'admin', 'admin@gmail.com', '$2b$10$smuE08TX.u/H8Daq/bfMI.Zy8CO380r0DtJLX5wLHCDHIpL5HqWaG', 'ADMIN', 2, 2, '2025-04-13 19:24:45', 1),
+	(2, 'admin', 'admin@gmail.com', '$2b$10$zW1Vzcq.5wvLFscNyneW3.x3aa430guTr4Fn5VEcfJiMhX5W7x9Ae', 'ADMIN', 2, 2, '2025-04-13 19:24:45', 1),
 	(3, 'admin', 'adminpruebas@gmail.com', '$2b$10$hLAllstz652NXnDPGi00bO3mHP90nh/t.U53yKyad5UT82S1xQMkG', 'ADMIN', 3, 1, '2025-04-14 18:05:43', 1);
 
 -- Dumping structure for table ticktac.cliente
@@ -54,16 +54,23 @@ CREATE TABLE IF NOT EXISTS `cliente` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `rol` varchar(50) NOT NULL DEFAULT 'CLIENT',
-  `activo` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacenan los clietnes de los usuarios (empresas)';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacenan los clietnes de los usuarios (empresas)';
 
--- Dumping data for table ticktac.cliente: ~2 rows (approximately)
+-- Dumping data for table ticktac.cliente: ~10 rows (approximately)
 DELETE FROM `cliente`;
-INSERT INTO `cliente` (`id`, `nombre`, `email`, `password`, `rol`, `activo`) VALUES
-	(1, 'cliente1', 'cliente1@gmail.com', '$2b$10$VC5auABHXtzyEgfZW.WqcOAvHKau5de02wUF4qdwL.tb7hZb0Ngum', 'CLIENT', 1),
-	(2, 'cliente2', 'cliente2@gmail.com', '$2b$10$Dgww2L1x65jLi9NAQWp0weSBisQr7gIkqo3PtaiPzz2zMb.R4p4oC', 'CLIENT', 1);
+INSERT INTO `cliente` (`id`, `nombre`, `email`, `password`, `rol`) VALUES
+	(1, 'cliente1', 'cliente1@gmail.com', '$2b$10$VC5auABHXtzyEgfZW.WqcOAvHKau5de02wUF4qdwL.tb7hZb0Ngum', 'CLIENT'),
+	(2, 'cliente2', 'cliente2@gmail.com', '$2b$10$Dgww2L1x65jLi9NAQWp0weSBisQr7gIkqo3PtaiPzz2zMb.R4p4oC', 'CLIENT'),
+	(3, 'user3', 'user3@gmail.com', '$2b$10$HGZU45TLMNlz.BK6Nx6IGOKDW52OO7CSXV8tIvIQ0am7V9inImSfK', 'CLIENT'),
+	(4, 'cliente4', 'cliente4@gmail.com', '$2b$10$Dgww2L1x65jLi9NAQWp0weSBisQr7gIkqo3PtaiPzz2zMb.R4p4oC', 'CLIENT'),
+	(5, 'pruebaCliente', 'clientetest@gmail.com', '$2b$10$NCGoEjcFfSyQWb72n4L2quwLUsInkDO/4u/sesei9rmmEoOUwZvVq', 'CLIENT'),
+	(6, 'cliente5', 'cliente5@gmail.com', '$2b$10$8viTdXLBHeYnjvIQa4zro.B/o9KdD6uSAdxN0W24KzZCFZpJDqy6y', 'CLIENT'),
+	(7, 'cliente6', 'cliente6@gmail.com', '$2b$10$ZzNmy9EgvsuTaYC4faZa/.z.DM/XSpRKHy/3oyV8X/meQ0et0fQCy', 'CLIENT'),
+	(8, 'cliente7', 'cliente7@gmail.com', '$2b$10$S9rqumCGLvTrqdaKJKrxZutXanYXleP.5dJYkUnNG9QOvLZDfMHIa', 'CLIENT'),
+	(9, 'pruebatinas', 'pruebatinas@gmail.com', '$2b$10$g.bMtNP5p.dvbkwfeF6E/OYFx8gZ/JGmCxEV5hgq6olgs0CBpom/G', 'CLIENT'),
+	(10, 'pruebatinas2', 'pruebatinas2@gmail.com', '$2b$10$z2gz5VDTAr/ygwe2hdl2ZuPpDEnnfX3/NjC.HjAewWjW8wgXOr3FS', 'CLIENT');
 
 -- Dumping structure for table ticktac.cliente_admin
 DROP TABLE IF EXISTS `cliente_admin`;
@@ -72,19 +79,26 @@ CREATE TABLE IF NOT EXISTS `cliente_admin` (
   `id_admin` int NOT NULL DEFAULT '0',
   `id_cliente` int NOT NULL DEFAULT '0',
   `activo` int NOT NULL DEFAULT '1',
+  `nombre_cliente` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_cliente_admin_cliente` (`id_cliente`),
   KEY `fk_cliente_admin_admin` (`id_admin`),
   CONSTRAINT `fk_cliente_admin_admin` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`),
   CONSTRAINT `FK_cliente_admin_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='relaciona los clientes con los administradores (empresas)';
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='relaciona los clientes con los administradores (empresas)';
 
--- Dumping data for table ticktac.cliente_admin: ~2 rows (approximately)
+-- Dumping data for table ticktac.cliente_admin: ~9 rows (approximately)
 DELETE FROM `cliente_admin`;
-INSERT INTO `cliente_admin` (`id`, `id_admin`, `id_cliente`, `activo`) VALUES
-	(2, 2, 1, 0),
-	(4, 2, 2, 0),
-	(5, 2, 2, 0);
+INSERT INTO `cliente_admin` (`id`, `id_admin`, `id_cliente`, `activo`, `nombre_cliente`) VALUES
+	(6, 2, 1, 1, 'Cliente1'),
+	(7, 2, 4, 1, 'client4'),
+	(10, 2, 5, 1, 'pruebaCliente'),
+	(12, 2, 2, 0, 'cliente2cambio'),
+	(13, 2, 6, 0, 'cliente5'),
+	(14, 2, 7, 1, 'cliente6'),
+	(15, 2, 8, 0, 'cliente7'),
+	(16, 2, 9, 0, 'pruebatinas'),
+	(17, 2, 10, 0, 'pruebatinas2');
 
 -- Dumping structure for table ticktac.estado
 DROP TABLE IF EXISTS `estado`;
@@ -92,10 +106,14 @@ CREATE TABLE IF NOT EXISTS `estado` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena el estado de los tickets';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena el estado de los tickets';
 
--- Dumping data for table ticktac.estado: ~0 rows (approximately)
+-- Dumping data for table ticktac.estado: ~3 rows (approximately)
 DELETE FROM `estado`;
+INSERT INTO `estado` (`id`, `nombre`) VALUES
+	(1, 'Nuevo'),
+	(2, 'Pendinte'),
+	(3, 'Cerrado');
 
 -- Dumping structure for table ticktac.plan
 DROP TABLE IF EXISTS `plan`;
@@ -124,10 +142,13 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   `asunto` varchar(50) NOT NULL DEFAULT '0',
   `id_estado` int NOT NULL DEFAULT (0),
   `id_cliente` int NOT NULL DEFAULT (0),
-  `id_usuario` int NOT NULL DEFAULT (0),
+  `id_admin` int NOT NULL DEFAULT '0',
+  `ts` datetime DEFAULT (now()),
   PRIMARY KEY (`id`),
   KEY `FK_tiket_estado` (`id_estado`),
   KEY `FK_tiket_cliente` (`id_cliente`),
+  KEY `FK_tiket_admin` (`id_admin`),
+  CONSTRAINT `FK_tiket_admin` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`),
   CONSTRAINT `FK_tiket_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`),
   CONSTRAINT `FK_tiket_estado` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los tickets';
