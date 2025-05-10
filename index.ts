@@ -5,6 +5,8 @@ import { initializeConnection } from "./context/MysqlConnector";
 import {router as routerUser} from "./usuarios/infrastructure/res/usuario.rest.controller";
 import { router as routerPlanes } from "./planes/infrastructure/res/plan.rest.controller";
 import { router as routerTiposPago } from "./tipospago/infrastructure/res/tipopago.rest.controller";
+import { router as routerTicket } from "./ticket/infrastructure/res/ticket.rest.controller";
+import { router as routeEstado } from "./estados/infrastructure/res/estado.rest.controller";
 dotenv.config()
 
 const app = express()
@@ -25,6 +27,8 @@ app.get("/", (req: Request, res: Response): void => {
 app.use(api,routerUser);
 app.use(api,routerPlanes);
 app.use(api,routerTiposPago);
+app.use(api,routerTicket);
+app.use(api,routeEstado);
 
 (async () => {
     try {
