@@ -115,6 +115,21 @@ INSERT INTO `estado` (`id`, `nombre`) VALUES
 	(2, 'Pendinte'),
 	(3, 'Cerrado');
 
+-- Dumping structure for table ticktac.mensaje
+DROP TABLE IF EXISTS `mensaje`;
+CREATE TABLE IF NOT EXISTS `mensaje` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `texto` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `autor` varchar(50) NOT NULL,
+  `id_ticket` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_mensaje_ticket` (`id_ticket`),
+  CONSTRAINT `FK_mensaje_ticket` FOREIGN KEY (`id_ticket`) REFERENCES `ticket` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena los mensajes de los tickets';
+
+-- Dumping data for table ticktac.mensaje: ~0 rows (approximately)
+DELETE FROM `mensaje`;
+
 -- Dumping structure for table ticktac.plan
 DROP TABLE IF EXISTS `plan`;
 CREATE TABLE IF NOT EXISTS `plan` (
@@ -142,19 +157,25 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   `asunto` varchar(50) NOT NULL DEFAULT '0',
   `id_estado` int NOT NULL DEFAULT (0),
   `id_cliente` int NOT NULL DEFAULT (0),
+  `id_usuario` int DEFAULT NULL,
   `id_admin` int NOT NULL DEFAULT '0',
+  `activo` tinyint NOT NULL DEFAULT '1',
   `ts` datetime DEFAULT (now()),
   PRIMARY KEY (`id`),
   KEY `FK_tiket_estado` (`id_estado`),
   KEY `FK_tiket_cliente` (`id_cliente`),
   KEY `FK_tiket_admin` (`id_admin`),
+  KEY `FK_tiket_usuario` (`id_usuario`),
   CONSTRAINT `FK_tiket_admin` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`),
   CONSTRAINT `FK_tiket_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`),
-  CONSTRAINT `FK_tiket_estado` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los tickets';
+  CONSTRAINT `FK_tiket_estado` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id`),
+  CONSTRAINT `FK_tiket_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los tickets';
 
--- Dumping data for table ticktac.ticket: ~0 rows (approximately)
+-- Dumping data for table ticktac.ticket: ~1 rows (approximately)
 DELETE FROM `ticket`;
+INSERT INTO `ticket` (`id`, `asunto`, `id_estado`, `id_cliente`, `id_usuario`, `id_admin`, `activo`, `ts`) VALUES
+	(3, 'pruebas admin', 1, 1, NULL, 2, 1, '2025-05-10 12:28:31');
 
 -- Dumping structure for table ticktac.tipo_pago
 DROP TABLE IF EXISTS `tipo_pago`;
