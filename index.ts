@@ -38,8 +38,6 @@ app.use(api,routeEstado);
     }
 })();
 
-
-
 app.listen(process.env.SERVER_PORT,()=>{
     console.log(`servidor escuchando por el 8080`)
 })
