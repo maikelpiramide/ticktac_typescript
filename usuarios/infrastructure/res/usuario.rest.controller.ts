@@ -137,7 +137,7 @@ router.put("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
     }
 })
 
-router.get("/admin/clientes",isAuth,isAdmin,async(req:Request,res:Response)=>{
+router.get("/admin/clientes",isAuth,isAdmin || isUser,async(req:Request,res:Response)=>{
       const auth = req.body.auth
       const admin:Admin = {
          id:auth.id,
