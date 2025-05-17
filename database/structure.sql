@@ -38,13 +38,14 @@ CREATE TABLE IF NOT EXISTS `admin` (
   KEY `FK_admin_tipo_pago` (`id_tipo_pago`),
   CONSTRAINT `FK_admin_contrato` FOREIGN KEY (`id_plan`) REFERENCES `plan` (`id`),
   CONSTRAINT `FK_admin_tipo_pago` FOREIGN KEY (`id_tipo_pago`) REFERENCES `tipo_pago` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena el superusuario que sería el primer usuario de la empresa (gestiona usuarios trabajadores y clientes)';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena el superusuario que sería el primer usuario de la empresa (gestiona usuarios trabajadores y clientes)';
 
 -- Dumping data for table ticktac.admin: ~2 rows (approximately)
 DELETE FROM `admin`;
 INSERT INTO `admin` (`id`, `nombre`, `email`, `password`, `rol`, `id_plan`, `id_tipo_pago`, `inicio_plan`, `activo`) VALUES
 	(2, 'admin', 'admin@gmail.com', '$2b$10$zW1Vzcq.5wvLFscNyneW3.x3aa430guTr4Fn5VEcfJiMhX5W7x9Ae', 'ADMIN', 2, 2, '2025-04-13 19:24:45', 1),
-	(3, 'admin', 'adminpruebas@gmail.com', '$2b$10$hLAllstz652NXnDPGi00bO3mHP90nh/t.U53yKyad5UT82S1xQMkG', 'ADMIN', 3, 1, '2025-04-14 18:05:43', 1);
+	(3, 'admin', 'adminpruebas@gmail.com', '$2b$10$hLAllstz652NXnDPGi00bO3mHP90nh/t.U53yKyad5UT82S1xQMkG', 'ADMIN', 3, 1, '2025-04-14 18:05:43', 1),
+	(4, 'pruebas', 'pruebas@gmail.com', '$2b$10$FIGsza2VkOTD.afKCAtFVOyg1z4F3aSe13gkAbERTxt9FtcCGV1Nm', 'ADMIN', 2, 2, '2025-05-16 21:15:38', 1);
 
 -- Dumping structure for table ticktac.cliente
 DROP TABLE IF EXISTS `cliente`;
@@ -87,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `cliente_admin` (
   CONSTRAINT `FK_cliente_admin_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='relaciona los clientes con los administradores (empresas)';
 
--- Dumping data for table ticktac.cliente_admin: ~9 rows (approximately)
+-- Dumping data for table ticktac.cliente_admin: ~8 rows (approximately)
 DELETE FROM `cliente_admin`;
 INSERT INTO `cliente_admin` (`id`, `id_admin`, `id_cliente`, `activo`, `nombre_cliente`) VALUES
 	(6, 2, 1, 1, 'Cliente1'),
@@ -108,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `estado` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena el estado de los tickets';
 
--- Dumping data for table ticktac.estado: ~3 rows (approximately)
+-- Dumping data for table ticktac.estado: ~2 rows (approximately)
 DELETE FROM `estado`;
 INSERT INTO `estado` (`id`, `nombre`) VALUES
 	(1, 'Nuevo'),
