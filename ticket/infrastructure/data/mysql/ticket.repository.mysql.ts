@@ -7,7 +7,7 @@ import { getMySqlConnection } from "../../../../context/MysqlConnector"
 import Estado from "../../../../estados/domain/Estado"
 import Cliente from "../../../../usuarios/domain/Cliente"
 export default class TicketRepositoryMysql implements TicketRepository{
-    async getByUser(usuario: Admin | Usuario): Promise<Ticket[]> {
+    async getByUser(usuario: Admin | Usuario | Cliente): Promise<Ticket[]> {
         const connection = getMySqlConnection();
         let tickets:Ticket[] = new Array();
         let query = `
@@ -29,8 +29,6 @@ export default class TicketRepositoryMysql implements TicketRepository{
             query += 'and t.id_usuario =?'
         if(usuario.rol == Rol.CLIENT)
             query += 'and t.id_cliente =?'
-           
-            
         
         const [result]:any = await connection.query(query, [true,usuario.id]);
         if(result.length > 0){
@@ -55,6 +53,9 @@ export default class TicketRepositoryMysql implements TicketRepository{
 
     }
     async crearTicket(ticket: Ticket) {
-        
+        const connection = getMySqlConnection();
+        const [result]:any = await connection.query('INSERT INTO ticket (asunto,id_usuario,id_cliente,id_admin,id_estado) values (?,?,?,?,?)',[ticket.asunto,ticket.usuario?.id,ticket.cliente?.id,ticket.admin?.id,ticket.estado?.id]);
+        ticket.id = result.insertId;
+        return ticket;
     }
 }

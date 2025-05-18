@@ -6,5 +6,5 @@ export default class Cliente{
     password?:string;
     email?:string;
     rol?:string;
-    administrador?:Admin;
+    administradores?:Admin[];
 }

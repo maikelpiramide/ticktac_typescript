@@ -122,7 +122,6 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
                 return usuario;
             }
         return null;
-
     }
     
     async getUsuarios(admin:Admin): Promise<Usuario[]> {
