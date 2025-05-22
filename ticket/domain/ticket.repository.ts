@@ -6,6 +6,7 @@ import Ticket from "./Ticket";
 export default interface TicketRepository{
 
     getByUser(usuario:Admin | Usuario| Cliente):Promise<Ticket[]>;
+    getById(id:Number):Promise<Ticket>;
     crearTicket(ticket:Ticket):any;
 
 }
