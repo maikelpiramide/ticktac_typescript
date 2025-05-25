@@ -10,7 +10,7 @@ export default class TicketRepositoryMysql implements TicketRepository{
     
     async getById(id: Number): Promise<Ticket> {
         const connection = getMySqlConnection();
-        console.warn("id nuevo ticket",id)
+        //console.warn("id nuevo ticket",id)
         let query = `
             SELECT t.id,t.asunto, t.ts,state.id AS id_estado,state.nombre AS nombre_estado,c.email AS email_cliente,a.email as email_admin, u.email as email_usuario FROM ticket AS t
             JOIN estado AS state
@@ -24,7 +24,7 @@ export default class TicketRepositoryMysql implements TicketRepository{
             where t.id = ? and  t.activo = ?
         `
         const [result]:any = await connection.query(query,[id,true]);
-        console.log(result)
+        //console.log(result)
         const estado:Estado = {
             id:result[0].id_estado,
             nombre: result[0].nombre_estado
@@ -93,8 +93,8 @@ export default class TicketRepositoryMysql implements TicketRepository{
         const id = result.insertId;
         //ticket.id = result.insertId;
         //ticket.ts = new Date();
-        const newTicket = await this.getById(id);
-        console.warn("tocket nuevo",newTicket)
+        //const newTicket = await this.getById(id);
+        //console.warn("tocket nuevo",newTicket)
         return this.getById(id);
     }
 }

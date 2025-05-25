@@ -65,7 +65,7 @@ const isAuth = (req:Request,res:Response,next:NextFunction)=>{
 
     }catch(err){
         console.error(err)
-        response.status(401).json({message:"Usuario no autorizado"})
+        res.status(401).json({message:"Usuario no autorizado"})
     }
 }
 
@@ -83,7 +83,7 @@ const isAdmin = async (req:Request,res:Response,next:NextFunction)=>{
 
     }catch(err){
         console.error(err)
-        response.status(401).json({message:"Usuario no autorizado"})
+        res.status(401).json({message:"Usuario no autorizado"})
     }
     
 }
@@ -102,7 +102,7 @@ const isUser = async (req:Request,res:Response,next:NextFunction)=>{
 
     }catch(err){
         console.error(err)
-        response.status(401).json({message:"Usuario no autorizado"})
+        res.status(401).json({message:"Usuario no autorizado"})
     }
     
 }

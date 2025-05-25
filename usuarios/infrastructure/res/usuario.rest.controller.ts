@@ -93,7 +93,7 @@ router.post("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
     }
 })
 
-router.get("/admin/usuarios",isAuth,isAdmin,async(req:Request,res:Response)=>{
+router.get("/usuarios",isAuth,isAdmin,async(req:Request,res:Response)=>{
     const admin:Admin = req.body.auth
     try {
         const usuarios = await usuarioUseCases.getUsuarios(admin)
@@ -137,7 +137,7 @@ router.put("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
     }
 })
 
-router.get("/admin/clientes",isAuth,isAdmin || isUser,async(req:Request,res:Response)=>{
+router.get("/admin/clientes",isAuth,isAdmin,async(req:Request,res:Response)=>{
       const auth = req.body.auth
       const admin:Admin = {
          id:auth.id,

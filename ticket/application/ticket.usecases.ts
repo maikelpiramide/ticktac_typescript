@@ -16,10 +16,14 @@ export class TicketUseCases {
 
     async crearTicket(ticket: Ticket,mensaje:Mensaje): Promise<any> {
        
-        const ticketDb = await this.ticketRepository.crearTicket(ticket);
-        mensaje.ticket = ticketDb;
-        //await this.mensajeUseCases.crearMensaje(mensaje);
-
+        const ticketDb:Ticket = await this.ticketRepository.crearTicket(ticket);
+        try {
+            mensaje.ticket = ticketDb;
+            await this.mensajeUseCases.crearMensaje(mensaje);
+        }catch(e){
+            console.log(e);
+        }
+       
         return ticketDb;
     }
 }
