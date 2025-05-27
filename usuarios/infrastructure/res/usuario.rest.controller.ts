@@ -153,6 +153,23 @@ router.get("/admin/clientes",isAuth,isAdmin,async(req:Request,res:Response)=>{
       }
 })
 
+router.get("/usuario/clientes",isAuth,isUser,async(req:Request,res:Response)=>{
+    const auth = req.body.auth
+    const usuario:Usuario = {
+       id:auth.id,
+       email:auth.email
+    }
+    try {
+        const clientes = await usuarioUseCases.getClientesByUser(usuario)
+        res.status(200).json({error:false,message:"Clientes obtenidos correctamente",data:clientes})
+    }catch(error){
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'No se ha podido obtener los clientes, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:error})
+    }
+    
+})
+
 router.post("/admin/cliente",isAuth,isAdmin,async(req:Request,res:Response)=>{
     const data = req.body
     const auth = req.body.auth

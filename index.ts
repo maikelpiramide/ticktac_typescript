@@ -7,16 +7,20 @@ import { router as routerPlanes } from "./planes/infrastructure/res/plan.rest.co
 import { router as routerTiposPago } from "./tipospago/infrastructure/res/tipopago.rest.controller";
 import { router as routerTicket } from "./ticket/infrastructure/res/ticket.rest.controller";
 import { router as routeEstado } from "./estados/infrastructure/res/estado.rest.controller";
+import { initSocket } from "./context/utilities/Shoket";
+import http from "http";
 dotenv.config()
 
 const app = express()
 const api = "/api"
+const server = http.createServer(app);
 
 const options: cors.CorsOptions = {
     origin:[
         "http://localhost:5173"
     ]
 }
+
 app.use(cors(options));
 app.use(express.json());
 
@@ -38,6 +42,7 @@ app.use(api,routeEstado);
     }
 })();
 
-app.listen(process.env.SERVER_PORT,()=>{
+const io = initSocket(server);
+server.listen(process.env.SERVER_PORT,()=>{
     console.log(`servidor escuchando por el 8080`)
 })

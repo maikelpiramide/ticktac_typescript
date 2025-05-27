@@ -100,4 +100,8 @@ export default class UsuarioUseCases{
         if(usuario.password != null) usuario.password = hash(usuario.password)
         return await this.usuarioRepository.updatePerfil(usuario);
     }
+
+    async getClientesByUser(usuario:Usuario):Promise<Cliente[]>{
+        return await this.usuarioRepository.getClientesByUser(usuario)
+    }
 }

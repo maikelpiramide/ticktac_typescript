@@ -249,5 +249,27 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
         if(!result.affectedRows) throw new Error("No se pudo actualizar el usuario");
         return usuario;
     }
+    async getClientesByUser(usuario: Usuario): Promise<Cliente[]> {
+        const connection = getMySqlConnection();
+        const query = `
+            SELECT ca.nombre_cliente,c.email,c.rol, ca.id FROM usuario AS u
+            JOIN admin AS a 
+            ON a.id = u.id_admin
+            JOIN cliente_admin AS ca
+            ON ca.id_admin = a.id
+            JOIN cliente AS c
+            ON c.id = ca.id_cliente
+            WHERE ca.activo = ? AND u.id = ?
+            GROUP BY ca.id
+        `
+        const [result]:any = await connection.query(query,[true,usuario.id]);
+        return result.map((cliente:any) => ({
+            id:cliente.id,
+            nombre:cliente.nombre_cliente,
+            email:cliente.email,
+            rol:cliente.rol,
+        }))
+        
+    }
 
 }
