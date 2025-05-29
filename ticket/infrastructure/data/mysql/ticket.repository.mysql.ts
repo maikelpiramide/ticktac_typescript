@@ -12,7 +12,7 @@ export default class TicketRepositoryMysql implements TicketRepository{
         const connection = getMySqlConnection();
         //console.warn("id nuevo ticket",id)
         let query = `
-            SELECT t.id,t.asunto, t.ts,state.id AS id_estado,state.nombre AS nombre_estado,c.email AS email_cliente,a.email as email_admin, u.email as email_usuario FROM ticket AS t
+            SELECT t.id,t.asunto, t.ts,state.id AS id_estado,state.nombre AS nombre_estado,c.email AS email_cliente, c.id as id_cliente,a.email as email_admin,a.id as id_admin, u.email as email_usuario, u.id as id_usuario FROM ticket AS t
             JOIN estado AS state
             ON state.id = t.id_estado
             JOIN cliente AS c
@@ -29,13 +29,25 @@ export default class TicketRepositoryMysql implements TicketRepository{
             id:result[0].id_estado,
             nombre: result[0].nombre_estado
         }
+        const usuario:Usuario = {
+            id:result[0].id_usuario,
+            email:result[0].email_usuario
+        }
+        const admin:Admin = {
+            id:result[0].id_admin,
+            email:result[0].email_admin
+        }
+        const cliente:Cliente = {
+            id:result[0].id_cliente,
+            email:result[0].email_cliente
+        }
         const ticket:Ticket = {
             id:result[0].id,
             asunto: result[0].asunto,
             estado:estado,
-            cliente:new Cliente().email = result[0].email_cliente,
-            admin:new Admin().email = result[0].email_admin,
-            usuario:new Usuario().email = result[0].email_usuario,
+            cliente: cliente,
+            admin:admin,
+            usuario:usuario,
             ts:result[0].ts
         }
         return ticket;
@@ -45,7 +57,7 @@ export default class TicketRepositoryMysql implements TicketRepository{
         const connection = getMySqlConnection();
         let tickets:Ticket[] = new Array();
         let query = `
-            SELECT t.id,t.asunto, t.ts,state.id AS id_estado,state.nombre AS nombre_estado,c.email AS email_cliente,a.email as email_admin, u.email as email_usuario FROM ticket AS t
+            SELECT t.id,t.asunto, t.ts,state.id AS id_estado,state.nombre AS nombre_estado,c.email AS email_cliente,c.id as id_cliente,a.email as email_admin, a.id as id_admin, u.email as email_usuario, u.id as id_usuario FROM ticket AS t
             JOIN estado AS state
             ON state.id = t.id_estado
             JOIN cliente AS c
@@ -71,13 +83,25 @@ export default class TicketRepositoryMysql implements TicketRepository{
                     id:t.id_estado,
                     nombre: t.nombre_estado
                 }
+                const usuario:Usuario = {
+                    id:t.id_usuario,
+                    email:t.email_usuario
+                }
+                const admin:Admin = {
+                    id:t.id_admin,
+                    email:t.email_admin
+                }
+                const cliente:Cliente = {
+                    id:t.id_cliente,
+                    email:t.email_cliente
+                }
                 const ticket:Ticket = {
                     id:t.id,
                     asunto: t.asunto,
                     estado:estado,
-                    cliente:new Cliente().email = t.email_cliente,
-                    admin:new Admin().email = t.email_admin,
-                    usuario:new Usuario().email = t.email_usuario,
+                    cliente:cliente,
+                    admin:admin,
+                    usuario:usuario,
                     ts:t.ts
                 }
                 tickets.push(ticket);

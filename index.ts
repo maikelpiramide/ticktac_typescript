@@ -7,7 +7,7 @@ import { router as routerPlanes } from "./planes/infrastructure/res/plan.rest.co
 import { router as routerTiposPago } from "./tipospago/infrastructure/res/tipopago.rest.controller";
 import { router as routerTicket } from "./ticket/infrastructure/res/ticket.rest.controller";
 import { router as routeEstado } from "./estados/infrastructure/res/estado.rest.controller";
-import { initSocket } from "./context/utilities/Shoket";
+import { initSocket } from "./context/utilities/shoket";
 import http from "http";
 dotenv.config()
 

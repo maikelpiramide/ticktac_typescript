@@ -1,4 +1,3 @@
-// socket.ts
 import { Server } from "socket.io";
 import http from "http";
 
@@ -7,33 +6,36 @@ let io: Server;
 export const initSocket = (server: http.Server) => {
   io = new Server(server, {
     cors: {
-      origin: "*", // Asegúrate de ajustar esto para producción
+      origin: "*", // En producción, especifica los orígenes permitidos
+      //methods: ["GET", "POST"]
     },
+   
   });
 
   io.on("connection", (socket) => {
     console.log("Usuario conectado", socket.id);
 
-    // Se une a salas de tickets que le pertenecen
-    socket.on("joinUserRooms", (ticketIds: string[]) => {
-      ticketIds.forEach((ticketId) => socket.join(`ticket-${ticketId}`));
+    socket.on("join-user-room", (userId: string) => {
+      socket.join(`user-${userId}`);
+      console.log(`Socket ${socket.id} joined room user-${userId}`);
     });
 
-    // Se une a la sala de chat de un ticket específico
-    socket.on("joinTicketChat", (ticketId: string) => {
-      socket.join(`chat-${ticketId}`);
+    // Manejar desconexiones
+    socket.on("disconnect", () => {
+      console.log("Usuario desconectado", socket.id);
     });
 
-    // Mensaje nuevo en un ticket
-    socket.on("newMessage", ({ ticketId, message }) => {
-      io.to(`chat-${ticketId}`).emit("message", message);
-    });
-
-    // Ticket actualizado o creado
-    socket.on("ticketUpdated", (ticket) => {
-      io.to(`ticket-${ticket.id}`).emit("ticketUpdate", ticket);
+    socket.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
     });
   });
 
+  return io;
+};
+
+export const getIo = () => {
+  if (!io) {
+    throw new Error("Socket.IO no inicializado.");
+  }
   return io;
 };

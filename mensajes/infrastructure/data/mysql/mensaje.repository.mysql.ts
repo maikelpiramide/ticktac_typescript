@@ -48,7 +48,7 @@ WHERE m.id_ticket = ?*/
     async crearMensaje(mensaje: Mensaje): Promise<any> {
         const connection = getMySqlConnection();
         try {
-            console.log("en el menaje repository: ", mensaje)
+            //console.log("en el menaje repository: ", mensaje)
             const [result] = await connection.execute(
                 'INSERT INTO mensaje (texto, autor, id_ticket,id_autor, ts) VALUES (?, ?, ?, ?,NOW())',
                 [mensaje.texto, mensaje.autor?.rol, mensaje.ticket?.id,mensaje.autor?.id]
