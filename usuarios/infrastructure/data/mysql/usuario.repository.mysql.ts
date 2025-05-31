@@ -252,7 +252,7 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     async getClientesByUser(usuario: Usuario): Promise<Cliente[]> {
         const connection = getMySqlConnection();
         const query = `
-            SELECT ca.nombre_cliente,c.email,c.rol, ca.id FROM usuario AS u
+            SELECT ca.nombre_cliente,c.email,c.rol, c.id as id_cliente,ca.id FROM usuario AS u
             JOIN admin AS a 
             ON a.id = u.id_admin
             JOIN cliente_admin AS ca
@@ -265,11 +265,29 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
         const [result]:any = await connection.query(query,[true,usuario.id]);
         return result.map((cliente:any) => ({
             id:cliente.id,
+            idCliente:cliente.id_cliente,
             nombre:cliente.nombre_cliente,
             email:cliente.email,
             rol:cliente.rol,
         }))
-        
+    }
+    async getAdminByUser(usuario: Usuario): Promise<Admin> {
+        const connection = getMySqlConnection()
+        const sql= `
+            SELECT a.nombre,a.email,a.id FROM usuario AS u
+            JOIN admin AS a 
+            ON a.id = u.id_admin
+            WHERE u.id = ?
+        `
+        const [result]:any = await connection.query(sql,[usuario.id])
+        if(result.length == 0) throw new Error("no se ha poddido obtener el administrador del usuario");
+        const admin:Admin = {
+            id : result[0].id,
+            nombre : result[0].nombre,
+            email : result[0].email
+        }
+
+        return admin;
     }
 
 }

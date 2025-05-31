@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import http from "http";
+import Rol from "../../roles/domain/Rol";
 
 let io: Server;
 
@@ -15,9 +16,25 @@ export const initSocket = (server: http.Server) => {
   io.on("connection", (socket) => {
     console.log("Usuario conectado", socket.id);
 
-    socket.on("join-user-room", (userId: string) => {
-      socket.join(`user-${userId}`);
-      console.log(`Socket ${socket.id} joined room user-${userId}`);
+    socket.on("join-user-room", (user: any) => {
+      if(user.rol == Rol.ADMIN)
+      {
+        socket.join(`admin-${user.id}`);
+        console.log(`Socket ${socket.id} joined room admin-${user.id}`);
+      }
+
+      if(user.rol == Rol.USER)
+      {
+        socket.join(`user-${user.id}`);
+        console.log(`Socket ${socket.id} joined room user-${user.id}`);
+      }
+
+      if(user.rol == Rol.CLIENT)
+      {
+        socket.join(`client-${user.id}`);
+        console.log(`Socket ${socket.id} joined room client-${user.id}`);
+      }
+      
     });
 
     // Manejar desconexiones

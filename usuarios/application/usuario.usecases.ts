@@ -104,4 +104,8 @@ export default class UsuarioUseCases{
     async getClientesByUser(usuario:Usuario):Promise<Cliente[]>{
         return await this.usuarioRepository.getClientesByUser(usuario)
     }
+
+    async getAdminByUser(usuario:Usuario):Promise<Admin>{
+        return await this.usuarioRepository.getAdminByUser(usuario);
+    }
 }

@@ -12,9 +12,12 @@ import MensajeMySQLRepository from "../../../mensajes/infrastructure/data/mysql/
 import Estado from "../../../estados/domain/Estado";
 import Mensaje from "../../../mensajes/domain/Mensaje";
 import { getIo } from "../../../context/utilities/shoket";
+import UsuarioUseCases from "../../../usuarios/application/usuario.usecases";
+import UsuarioRepositoryMyslq from "../../../usuarios/infrastructure/data/mysql/usuario.repository.mysql";
 
 const mensajeUseCases:MensajeUseCases = new MensajeUseCases(new MensajeMySQLRepository());
 const ticketUseCases:TicketUseCases = new TicketUseCases(new TicketRepositoryMysql(),mensajeUseCases);
+const usuarioUseCases:UsuarioUseCases = new UsuarioUseCases(new UsuarioRepositoryMyslq())
 
 const router = express.Router();
 
@@ -93,6 +96,9 @@ router.post("/ticket", isAuth, async (req: Request, res: Response) => {
                     }
                     ticket.cliente = c
                 }
+                const adminUser = await usuarioUseCases.getAdminByUser(user);
+                ticket.admin = adminUser
+                console.warn("adminUser ticket usuario",adminUser)
                 break;
             case Rol.CLIENT:
                 user = {
@@ -113,16 +119,16 @@ router.post("/ticket", isAuth, async (req: Request, res: Response) => {
         // Emitir el evento new-ticket a las salas específicas
         const io = getIo();
         if (ticketdb.admin && ticketdb.admin.id) {
-            console.log(`Emitiendo a user-${ticketdb.admin.id}`);
-            io.to(`user-${ticketdb.admin.id}`).emit("new-ticket", ticketdb);
+            console.log(`Emitiendo a admin-${ticketdb.admin.id}`);
+            io.to(`admin-${ticketdb.admin.id}`).emit("new-ticket", ticketdb);
         }
         if (ticketdb.usuario && ticketdb.usuario.id) {
             console.log(`Emitiendo a user-${ticketdb.usuario.id}`);
             io.to(`user-${ticketdb.usuario.id}`).emit("new-ticket", ticketdb);
         }
         if (ticketdb.cliente && ticketdb.cliente.id) {
-            console.log(`Emitiendo a user-${ticketdb.cliente.id}`);
-            io.to(`user-${ticketdb.cliente.id}`).emit("new-ticket", ticketdb);
+            console.log(`Emitiendo a client-${ticketdb.cliente.id}`);
+            io.to(`client-${ticketdb.cliente.id}`).emit("new-ticket", ticketdb);
         }
 
         res.json({error:false,data:ticketdb,message:"Ticket creado correctamente"});
