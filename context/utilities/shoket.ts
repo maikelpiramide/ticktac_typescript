@@ -37,6 +37,11 @@ export const initSocket = (server: http.Server) => {
       
     });
 
+    socket.on("join-ticket-chat",(idTicket:Number)=>{
+      console.log("join ticket chat: ", idTicket)
+      socket.join(`ticket-chat-${idTicket}`)
+    })
+
     // Manejar desconexiones
     socket.on("disconnect", () => {
       console.log("Usuario desconectado", socket.id);

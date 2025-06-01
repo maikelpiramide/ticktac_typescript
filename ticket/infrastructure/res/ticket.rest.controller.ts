@@ -106,6 +106,12 @@ router.post("/ticket", isAuth, async (req: Request, res: Response) => {
                     rol: Rol.CLIENT
                 } as Cliente;
                 ticket.cliente = user;
+                if(data.usuario){
+                    const a:Admin = {
+                        id:data.usuario
+                    }
+                    ticket.admin = a
+                }
                 break;
             default:
                 throw new Error('Rol no válido');

@@ -290,4 +290,21 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
         return admin;
     }
 
+    async getAdminsByClient(cliente:Cliente): Promise<Admin[]> {
+        const connection = getMySqlConnection()
+        const query = `
+            SELECT a.nombre,a.email,a.id FROM cliente_admin ca
+            JOIN admin AS a
+            ON a.id = ca.id_admin
+            WHERE id_cliente = ? AND a.activo = ?
+        `
+        const [result]:any = await connection.query(query,[cliente.id,true])
+        return result.map((admin:any)=>({
+            id:admin.id,
+            nombre:admin.nombre,
+            email:admin.email
+        }))
+
+    }
+
 }

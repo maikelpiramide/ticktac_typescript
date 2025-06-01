@@ -1,5 +1,5 @@
 import express,{Request,Response} from "express"
-import { createTokenUser,createTokenClient, isAuth, isAdmin,isUser } from "../../../context/security/auth"
+import { createTokenUser,createTokenClient, isAuth, isAdmin,isUser, isClient } from "../../../context/security/auth"
 import UsuarioRepositoryMyslq from "../data/mysql/usuario.repository.mysql"
 import UsuarioUseCases from "../../application/usuario.usecases"
 import Admin from "../../domain/Admin"
@@ -273,5 +273,22 @@ router.put("/profile",isAuth,async(req:Request,res:Response)=>{
         const errorMessage = error instanceof Error? error.message : 'Error al actualizar el usuario, intentelo de nuevo más tarde';
         res.status(500).json({error:true,message:errorMessage})
     }
+})
+router.get("/cliente/admins",isAuth,isClient,async (req:Request,res:Response)=>{
+
+    const auth = req.body.auth
+    const c:Cliente={
+        id:auth.id
+    }
+    try {
+        
+        const admins = await usuarioUseCases.getAdminsByClient(c);
+        res.status(200).json({error:false,message:"Usuarios obtenidos",admins})
+    }catch(error){
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'Error al obtener usuarios, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:errorMessage})
+    }
+
 })
 export {router}

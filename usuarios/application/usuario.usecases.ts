@@ -108,4 +108,8 @@ export default class UsuarioUseCases{
     async getAdminByUser(usuario:Usuario):Promise<Admin>{
         return await this.usuarioRepository.getAdminByUser(usuario);
     }
+    async getAdminsByClient(cliente:Cliente):Promise<Admin[]>
+    {
+        return await this.usuarioRepository.getAdminsByClient(cliente)
+    }
 }

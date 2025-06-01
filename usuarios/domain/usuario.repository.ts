@@ -18,4 +18,5 @@ export default interface UsuarioRepository {
     updateCliente(cliente: Cliente,admin:Admin): Promise<Cliente>;
     updatePerfil(usuario: Usuario | Admin | Cliente): Promise<Usuario | Admin | Cliente>;
     getAdminByUser(usuario:Usuario):Promise<Admin>
+    getAdminsByClient(cliente:Cliente):Promise<Admin[]>
 }

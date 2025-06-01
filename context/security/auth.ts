@@ -106,5 +106,23 @@ const isUser = async (req:Request,res:Response,next:NextFunction)=>{
     }
     
 }
+const isClient = async (req:Request,res:Response,next:NextFunction)=>{
+    try{
+        
+         const auth = req.body.auth
+        if(auth.rol == Rol.CLIENT){
+            
+            next();
 
-export { decode,createTokenUser,createTokenClient,isAuth, isAdmin,isUser}
+        }else{
+            res.status(401).json({message:"Usuario no autorizado"})
+        }
+
+    }catch(err){
+        console.error(err)
+        res.status(401).json({message:"Usuario no autorizado"})
+    }
+    
+}
+
+export { decode,createTokenUser,createTokenClient,isAuth, isAdmin,isUser,isClient}
