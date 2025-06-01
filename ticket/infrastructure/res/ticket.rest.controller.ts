@@ -145,4 +145,107 @@ router.post("/ticket", isAuth, async (req: Request, res: Response) => {
     }
 })
 
+router.put("/ticket", isAuth, async (req: Request, res: Response) => {
+    const data = req.body;
+    const auth = req.body.auth;
+    try{
+        let user: Admin | Usuario | Cliente;
+        const e:Estado = {
+            id:data.estado
+        }
+        let ticket:Ticket = {
+            id:data.id,
+            asunto:data.asunto,
+            estado:e
+        }
+        switch (auth.rol) {
+            case Rol.ADMIN:
+                user = {
+                    id: auth.id,
+                    rol: Rol.ADMIN
+                } as Admin;
+                ticket.admin = user;
+                if(data.usuario){
+                    let u:Usuario = {
+                        id: data.usuario
+                    }
+                    ticket.usuario = u
+                }
+                const c:Cliente = {
+                    id:data.cliente
+                }
+                ticket.cliente = c
+                break;
+            case Rol.USER:
+                user = {
+                    id: auth.id,
+                    rol: Rol.USER
+                } as Usuario;
+                ticket.usuario = user;
+                if(data.cliente){
+                    let c:Cliente = {
+                        id: data.cliente
+                    }
+                    ticket.cliente = c
+                }
+                const adminUser = await usuarioUseCases.getAdminByUser(user);
+                ticket.admin = adminUser
+                console.warn("adminUser ticket usuario",adminUser)
+                break;
+            case Rol.CLIENT:
+                user = {
+                    id: auth.id,
+                    rol: Rol.CLIENT
+                } as Cliente;
+                ticket.cliente = user;
+                if(data.usuario){
+                    const a:Admin = {
+                        id:data.usuario
+                    }
+                    ticket.admin = a
+                }
+                break;
+            default:
+                throw new Error('Rol no válido');
+        }
+
+        let originalTicket = await ticketUseCases.getById(ticket);
+        let ticketdb = await ticketUseCases.editTicket(ticket);
+
+        const io = getIo();
+        if (ticketdb.admin && ticketdb.admin.id) {
+            console.log(`Emitiendo a admin-${ticketdb.admin.id}`);
+            if(originalTicket.admin?.id != ticketdb.admin.id){
+                io.to(`admin-${ticketdb.admin.id}`).emit("new-ticket", ticketdb);
+                io.to(`admin-${originalTicket.admin?.id}`).emit("delete-ticket", ticketdb);
+            }else{
+                io.to(`admin-${ticketdb.admin.id}`).emit("edit-ticket", ticketdb);
+            }
+        }
+        if (ticketdb.usuario && ticketdb.usuario.id) {
+            console.log(`Emitiendo a user-${ticketdb.usuario.id}`);
+            if(Number(originalTicket.usuario?.id) != Number(ticketdb.usuario.id)){
+                io.to(`user-${ticketdb.usuario.id}`).emit("new-ticket", ticketdb);
+                io.to(`user-${originalTicket.usuario?.id}`).emit("delete-ticket", ticketdb)
+            }else{
+                io.to(`user-${ticketdb.usuario.id}`).emit("edit-ticket", ticketdb);
+            }
+        }
+        if (ticketdb.cliente && ticketdb.cliente.id) {
+            console.log(`Emitiendo a client-${ticketdb.cliente.id}`);
+            if(originalTicket.cliente?.id!= ticketdb.cliente.id){
+                io.to(`client-${ticketdb.cliente.id}`).emit("new-ticket", ticketdb);
+                io.to(`client-${originalTicket.cliente?.id}`).emit("delete-ticket", ticketdb);
+            }else{
+                io.to(`client-${ticketdb.cliente.id}`).emit("edit-ticket", ticketdb);
+            }
+        }
+
+        res.json({error:false,data:ticketdb,message:"Ticket editado correctamente"});
+
+    }catch(error){
+        const errorMessage = error instanceof Error ? error.message : 'No se puedo editar el ticket';
+        res.status(500).json({ error: true, message: errorMessage });
+    }
+})
 export { router };

@@ -26,4 +26,11 @@ export class TicketUseCases {
        
         return ticketDb;
     }
+    async getById(ticket: Ticket): Promise<Ticket> {
+        return await this.ticketRepository.getById(ticket);
+    }
+
+    async editTicket(ticket: Ticket): Promise<Ticket> {
+        return await this.ticketRepository.editTicket(ticket);
+    }
 }

@@ -8,7 +8,7 @@ import Estado from "../../../../estados/domain/Estado"
 import Cliente from "../../../../usuarios/domain/Cliente"
 export default class TicketRepositoryMysql implements TicketRepository{
     
-    async getById(id: Number): Promise<Ticket> {
+    async getById(t:Ticket): Promise<Ticket> {
         const connection = getMySqlConnection();
         //console.warn("id nuevo ticket",id)
         let query = `
@@ -23,7 +23,7 @@ export default class TicketRepositoryMysql implements TicketRepository{
             ON u.id = t.id_usuario
             where t.id = ? and  t.activo = ?
         `
-        const [result]:any = await connection.query(query,[id,true]);
+        const [result]:any = await connection.query(query,[t.id,true]);
         //console.log(result)
         const estado:Estado = {
             id:result[0].id_estado,
@@ -114,11 +114,15 @@ export default class TicketRepositoryMysql implements TicketRepository{
     async crearTicket(ticket: Ticket) {
         const connection = getMySqlConnection();
         const [result]:any = await connection.query('INSERT INTO ticket (asunto,id_usuario,id_cliente,id_admin,id_estado) values (?,?,?,?,?)',[ticket.asunto,ticket.usuario?.id,ticket.cliente?.id,ticket.admin?.id,ticket.estado?.id]);
-        const id = result.insertId;
-        //ticket.id = result.insertId;
-        //ticket.ts = new Date();
-        //const newTicket = await this.getById(id);
-        //console.warn("tocket nuevo",newTicket)
-        return this.getById(id);
+        if(!result.insertId) throw new Error('No se pudo crear el ticket');
+        ticket.id = result.insertId;
+        return this.getById(ticket);
+    }
+
+    async editTicket(ticket: Ticket): Promise<Ticket> {
+        const connection = getMySqlConnection();
+        console.warn("ticket",ticket)
+        await connection.query('UPDATE ticket SET asunto = ?, id_estado = ?, id_admin = ?, id_cliente = ?, id_usuario = ? WHERE id = ?',[ticket.asunto,ticket.estado?.id,ticket.admin?.id,ticket.cliente?.id,ticket.usuario?.id,ticket.id]);
+        return this.getById(ticket);
     }
 }
