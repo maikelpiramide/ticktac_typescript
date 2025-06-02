@@ -248,4 +248,42 @@ router.put("/ticket", isAuth, async (req: Request, res: Response) => {
         res.status(500).json({ error: true, message: errorMessage });
     }
 })
+
+router.get("/ticket/:id", isAuth, async (req: Request, res: Response) => {
+    const params = req.params;
+    
+    const ticket:Ticket = {
+        id:Number(params.idTicket)
+    }
+    let user: Admin | Usuario | Cliente;
+    switch (req.body.auth.rol) {
+        case Rol.ADMIN:
+            user = {
+                id: req.body.auth.id,
+                rol: Rol.ADMIN
+            } as Admin;
+            break;
+        case Rol.USER:
+            user = {
+                id: req.body.auth.id,
+                rol: Rol.USER
+            } as Usuario;
+            break;
+        case Rol.CLIENT:
+            user = {
+                id: req.body.auth.id,
+                rol: Rol.CLIENT
+            }
+            break;
+        default:
+            throw new Error('Rol no válido');
+    }
+    try{
+        const mensajes = await mensajeUseCases.getByTicket(ticket,user);
+        res.json({error:false,message:"Mensajes obtenidos correctamente",data:mensajes});
+    }catch(error){
+        const errorMessage = error instanceof Error? error.message : 'No se puedo obtener el ticket';
+        res.status(500).json({ error: true, message: errorMessage });
+    }
+})
 export { router };

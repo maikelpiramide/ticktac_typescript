@@ -4,39 +4,28 @@ import Mensaje from "../../../domain/Mensaje";
 import MensajeRepository from "../../../domain/mensaje.repository";
 import Ticket from "../../../../ticket/domain/Ticket";
 import Usuario from "../../../../usuarios/domain/Usuario";
+import Admin from "../../../../usuarios/domain/Admin";
+import Cliente from "../../../../usuarios/domain/Cliente";
 
 export default class MensajeMySQLRepository implements MensajeRepository {
 
-    constructor() {
-
-    }
-    /*SELECT m.*, 
-  CASE m.tipo_autor 
-    WHEN 'ADMIN' THEN (SELECT nombre FROM admin WHERE id = m.id_autor)
-    WHEN 'USER' THEN (SELECT nombre FROM usuario WHERE id = m.id_autor)
-    WHEN 'CLIENT' THEN (SELECT nombre FROM cliente WHERE id = m.id_autor)
-  END as nombre_autor
-FROM mensaje m
-WHERE m.id_ticket = ?*/
-    async getAllByTicket(ticket: Ticket): Promise<Mensaje[]> {
+    async getByTicket(ticket: Ticket,usuario:Usuario | Admin | Cliente): Promise<Mensaje[]> {
         const connection = getMySqlConnection();
         try {
+
             const [rows] = await connection.execute(
-                'SELECT m.*, u.id as autor_id, u.nombre as autor_nombre FROM mensajes m INNER JOIN usuarios u ON m.autor_id = u.id WHERE m.ticket_id = ?',
+                'SELECT * from mensaje where id_ticket = ?',
                 [ticket.id]
             );
 
-            return (rows as any[]).map(row => {
-                const mensaje = new Mensaje();
-                mensaje.id = row.id;
-                mensaje.texto = row.texto;
-                mensaje.ts = row.ts;
-                mensaje.ticket = ticket;
-                
-                const autor = new Usuario();
-                autor.id = row.autor_id;
-                autor.nombre = row.autor_nombre;
-                mensaje.autor = autor;
+            return (rows as Mensaje[]).map(row => {
+                const mensaje:Mensaje = {
+                    id: row.id,
+                    texto: row.texto,
+                    autor: row.autor,
+                    ticket: ticket,
+                    ts: row.ts
+                };
 
                 return mensaje;
             });
