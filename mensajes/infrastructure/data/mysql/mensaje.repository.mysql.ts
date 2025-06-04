@@ -73,6 +73,66 @@ export default class MensajeMySQLRepository implements MensajeRepository {
         }
     }
 
+    async getById(id: number): Promise<Mensaje> {
+        const connection = getMySqlConnection();
+        try {
+            const query = `
+                SELECT m.id,m.autor,m.texto,m.id_autor,m.ts,
+                case
+                    when m.autor = "ADMIN" then a.email
+                    when m.autor = "USER" then u.email
+                    when m.autor = "CLIENT" then c.email
+                ELSE null
+                END AS email_autor
+                FROM mensaje AS m
+                left JOIN usuario AS u
+                ON u.id = m.id_autor
+                left JOIN admin AS a 
+                ON a.id = m.id_autor
+                left JOIN cliente AS c
+                ON c.id = m.id_autor
+                WHERE m.id = ?
+            `
+            const [row]:any = await connection.query(query,[id]);  
+
+            
+            switch (row[0].autor) {
+                case 'ADMIN':
+                    const admin: Admin = {
+                        id: row[0].id_autor,
+                        email: row[0].email_autor
+                    };
+                    row[0].autor = admin;
+                    break;
+                case 'CLIENT':
+                    const cliente: Cliente = {
+                        id: row[0].id_autor,
+                        email: row[0].email_autor
+                    };
+                    row[0].autor = cliente;
+                    break;
+                case 'USER':
+                    const usuario: Usuario = {
+                        id: row[0].id_autor,
+                        email: row[0].email_autor
+                    };
+                    row[0].autor = usuario;
+                    break;
+            }
+            
+            const mensaje:Mensaje = {
+                id: row[0].id,
+                texto: row[0].texto,
+                autor: row[0].autor,   
+                ts: row[0].ts
+            };
+
+            return mensaje;
+        } catch (error) {
+            throw new Error('Error al obtener el mensaje');
+        }
+    }
+
     async crearMensaje(mensaje: Mensaje): Promise<any> {
         const connection = getMySqlConnection();
         try {
@@ -81,7 +141,7 @@ export default class MensajeMySQLRepository implements MensajeRepository {
                 'INSERT INTO mensaje (texto, autor, id_ticket,id_autor, ts) VALUES (?, ?, ?, ?,NOW())',
                 [mensaje.texto, mensaje.autor?.rol, mensaje.ticket?.id,mensaje.autor?.id]
             );
-            return result;
+            return await this.getById((result as any).insertId);
         } catch (error) {
             throw new Error('Error al crear el mensaje');
         }

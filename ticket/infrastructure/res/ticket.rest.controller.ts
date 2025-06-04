@@ -283,4 +283,42 @@ router.get("/ticket/:id", isAuth, async (req: Request, res: Response) => {
         res.status(500).json({ error: true, message: errorMessage });
     }
 })
+router.post("/mensaje", isAuth, async (req: Request, res: Response) => {
+    const data = req.body;
+    const auth = req.body.auth;
+    const user = {
+        id: auth.id,
+        rol: auth.rol
+    }
+    switch (auth.rol) {
+        case Rol.ADMIN:
+            user as Admin;
+            break;
+        case Rol.USER:
+            user as Usuario;
+            break;
+        case Rol.CLIENT:
+            user as Cliente;
+            break;
+        default:
+            throw new Error('Rol no válido');
+    }
+    try{
+        const ticket:Ticket = {
+            id:data.ticket
+        };
+        const mensaje:Mensaje = {
+            texto: data.texto,
+            autor:user,
+            ticket:ticket
+        };
+        const mensajedb = await mensajeUseCases.crearMensaje(mensaje);
+        const io = getIo();
+        io.to(`ticket-chat-${data.ticket}`).emit("new-mensaje", mensajedb);
+        res.json({error:false,message:"Mensaje creado correctamente",data:mensajedb});
+    }catch(error){
+        const errorMessage = error instanceof Error? error.message : 'No se puedo obtener el ticket';
+        res.status(500).json({ error: true, message: errorMessage });
+    }
+})
 export { router };
