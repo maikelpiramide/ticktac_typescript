@@ -5,6 +5,6 @@ import Admin from "../../usuarios/domain/Admin";
 import Cliente from "../../usuarios/domain/Cliente";
 
 export default interface MensajeRepository {
-    getByTicket(ticket: Ticket,usuario:Usuario | Admin | Cliente): Promise<Mensaje[]>;
+    getByTicket(ticket: Ticket): Promise<Mensaje[]>;
     crearMensaje(mensaje: Mensaje): Promise<any>;
 }

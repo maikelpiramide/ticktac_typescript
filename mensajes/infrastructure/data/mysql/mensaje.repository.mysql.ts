@@ -9,21 +9,60 @@ import Cliente from "../../../../usuarios/domain/Cliente";
 
 export default class MensajeMySQLRepository implements MensajeRepository {
 
-    async getByTicket(ticket: Ticket,usuario:Usuario | Admin | Cliente): Promise<Mensaje[]> {
+    async getByTicket(ticket: Ticket): Promise<Mensaje[]> {
         const connection = getMySqlConnection();
         try {
+            const query = `
+                SELECT m.id,m.autor,m.texto,m.id_autor,m.ts,
+                case
+                    when m.autor = "ADMIN" then a.email
+                    when m.autor = "USER" then u.email
+                    when m.autor = "CLIENT" then c.email
+                ELSE null
+                END AS email_autor
+                FROM mensaje AS m
+                left JOIN usuario AS u
+                ON u.id = m.id_autor
+                left JOIN admin AS a 
+                ON a.id = m.id_autor
+                left JOIN cliente AS c
+                ON c.id = m.id_autor
+                WHERE m.id_ticket = ?
+            `
+            const [rows]:any = await connection.query(query,[ticket.id]);  
 
-            const [rows] = await connection.execute(
-                'SELECT * from mensaje where id_ticket = ?',
-                [ticket.id]
-            );
+            rows.forEach((row:any) => {
+                switch (row.autor) {
+                    case 'ADMIN':
+                        const admin: Admin = {
+                            id: row.id_autor,
+                            email: row.email_autor
+                        };
+                        row.autor = admin;
+                        break;
+                    case 'CLIENT':
+                        const cliente: Cliente = {
+                            id: row.id_autor,
+                            email: row.email_autor
+                        };
+                        row.autor = cliente;
+                        break;
+                    case 'USER':
+                        const usuario: Usuario = {
+                            id: row.id_autor,
+                            email: row.email_autor
+                        };
+                        row.autor = usuario;
+                        break;
+                }
+            })
 
             return (rows as Mensaje[]).map(row => {
+                
                 const mensaje:Mensaje = {
                     id: row.id,
                     texto: row.texto,
                     autor: row.autor,
-                    ticket: ticket,
                     ts: row.ts
                 };
 

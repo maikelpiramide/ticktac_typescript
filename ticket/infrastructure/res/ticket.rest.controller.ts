@@ -253,33 +253,30 @@ router.get("/ticket/:id", isAuth, async (req: Request, res: Response) => {
     const params = req.params;
     
     const ticket:Ticket = {
-        id:Number(params.idTicket)
+        id:Number(params.id)
     }
-    let user: Admin | Usuario | Cliente;
+    //let user: Admin | Usuario | Cliente;
+    let user = {
+        id: req.body.auth.id,
+        rol: req.body.auth.rol
+    }
+  
     switch (req.body.auth.rol) {
         case Rol.ADMIN:
-            user = {
-                id: req.body.auth.id,
-                rol: Rol.ADMIN
-            } as Admin;
+            user as Admin;
             break;
         case Rol.USER:
-            user = {
-                id: req.body.auth.id,
-                rol: Rol.USER
-            } as Usuario;
+            user as Usuario;
             break;
         case Rol.CLIENT:
-            user = {
-                id: req.body.auth.id,
-                rol: Rol.CLIENT
-            }
+            user as Cliente;
             break;
         default:
             throw new Error('Rol no válido');
     }
     try{
-        const mensajes = await mensajeUseCases.getByTicket(ticket,user);
+        const ticketdb = await ticketUseCases.getById(ticket);
+        const mensajes = await mensajeUseCases.getByTicket(ticketdb,user);
         res.json({error:false,message:"Mensajes obtenidos correctamente",data:mensajes});
     }catch(error){
         const errorMessage = error instanceof Error? error.message : 'No se puedo obtener el ticket';
