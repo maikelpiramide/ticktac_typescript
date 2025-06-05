@@ -37,12 +37,22 @@ export const initSocket = (server: http.Server) => {
       
     });
 
-    socket.on("join-ticket-chat",(idTicket:Number)=>{
-      console.log("join ticket chat: ", idTicket)
-      socket.join(`ticket-chat-${idTicket}`)
-    })
+   socket.on('join-ticket-chat', (ticketId) => {
+      if (joinedRooms.has(ticketId)) return; 
+      
+      socket.join(`ticket-chat-${ticketId}`);
+      joinedRooms.add(ticketId);
+      console.log(`🚪 Usuario unido a ticket-${ticketId}`); 
+    });
 
-    // Manejar desconexiones
+    const joinedRooms = new Set();
+
+    socket.on('leave-ticket-chat', (ticketId) => {
+      socket.leave(`ticket-${ticketId}`);
+      joinedRooms.delete(ticketId);
+    });
+
+  
     socket.on("disconnect", () => {
       console.log("Usuario desconectado", socket.id);
     });
