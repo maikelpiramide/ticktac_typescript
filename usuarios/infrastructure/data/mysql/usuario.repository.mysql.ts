@@ -1,7 +1,6 @@
 import Admin from "../../../domain/Admin";
 import UsuarioRepository from "../../../domain/usuario.repository";
 import { getMySqlConnection } from "../../../../context/MysqlConnector";
-import { ResultSetHeader } from "mysql2";
 import Usuario from "../../../domain/Usuario";
 import Cliente from "../../../domain/Cliente";
 import Rol from "../../../../roles/domain/Rol";

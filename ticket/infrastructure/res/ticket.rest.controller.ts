@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { isAuth, isAdmin } from "../../../context/security/auth";
+import { isAuth } from "../../../context/security/auth";
 import { TicketUseCases } from "../../application/ticket.usecases";
 import Ticket from "../../domain/Ticket";
 import Admin from "../../../usuarios/domain/Admin";

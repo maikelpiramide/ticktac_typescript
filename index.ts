@@ -7,6 +7,7 @@ import { router as routerPlanes } from "./planes/infrastructure/res/plan.rest.co
 import { router as routerTiposPago } from "./tipospago/infrastructure/res/tipopago.rest.controller";
 import { router as routerTicket } from "./ticket/infrastructure/res/ticket.rest.controller";
 import { router as routeEstado } from "./estados/infrastructure/res/estado.rest.controller";
+import { route as routeCalendario } from "./calendario/infrastructure/res/calendario.rest.controller";
 import { initSocket } from "./context/utilities/shoket";
 import http from "http";
 dotenv.config()
@@ -33,6 +34,7 @@ app.use(api,routerPlanes);
 app.use(api,routerTiposPago);
 app.use(api,routerTicket);
 app.use(api,routeEstado);
+app.use(api,routeCalendario);
 
 (async () => {
     try {
