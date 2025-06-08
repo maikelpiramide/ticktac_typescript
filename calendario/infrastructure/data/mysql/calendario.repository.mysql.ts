@@ -67,4 +67,8 @@ export default class CalendarioRepositoryMysql implements CalendarioRepository{
         return cal;
     }
 
+    async setEvento(usuario: Usuario | Admin, evento: Evento): Promise<Evento> {
+        return evento;
+    }
+
 }

@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { isAuth } from "../../../context/security/auth";
+import { isAdmin, isAuth, isUser } from "../../../context/security/auth";
 import CalendarioUseCases from "../../application/calendario.usecases";
 import CalendarioRepositoryMysql from "../data/mysql/calendario.repository.mysql";
 import { isUint16Array } from "util/types";
@@ -8,6 +8,7 @@ import Admin from "../../../usuarios/domain/Admin";
 import Usuario from "../../../usuarios/domain/Usuario";
 import Cliente from "../../../usuarios/domain/Cliente";
 import Calendario from "../../domain/Calendario";
+import Evento from "../../../evento/domain/Evento";
 
 
 const route = express.Router()
@@ -59,7 +60,40 @@ route.get("/calendario",isAuth,async(req:Request,res:Response)=>{
         res.status(500).json({ error: true, message: errorMessage });
     }
 
+})
+route.post("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:Response)=>{
 
+    const auth = req.body.auth
+    const data = req.body
+    const user = {
+        id:auth.id,
+        rol:auth.rol
+    }
+
+    switch(auth.rol){
+        case Rol.ADMIN:
+            user as Admin
+            break;
+        case Rol.USER:
+            user as Usuario
+            break;
+        default:
+            res.json({error:true,message:"Rol no autorizado"});
+    }
+    try{
+        const fechaIniSet = new Date(`${data.fechaIni} ${data.horaIni}:00`)
+        const fechaFinSet = new Date(`${data.fechaFin} ${data.horaFin}:00`)
+        res.json({error:false,fechaFinSet,fechaIniSet})
+        const evento:Evento ={
+            nombre:data.nombre,
+            fechaIni:data.fechaIni,
+            fechaFin:data.fechaFin,
+            color:data.color
+        }
+    }catch(error){
+        const errorMessage = error instanceof Error ? error.message : 'Error al crear el evento';
+        res.status(500).json({ error: true, message: errorMessage });
+    }
 })
 
 export {route}
