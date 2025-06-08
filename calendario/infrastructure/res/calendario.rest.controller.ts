@@ -50,8 +50,9 @@ route.get("/calendario",isAuth,async(req:Request,res:Response)=>{
             end:evento.fechaFin,
             color:evento.color
         }))
+        const {id,nombre} = calendario;
 
-        res.json({error:false,data:eventos})
+        res.json({error:false,calendario:{id,nombre},eventos:eventos})
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Error al obtener el calendario del usuario';
