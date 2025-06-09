@@ -291,4 +291,41 @@ router.get("/cliente/admins",isAuth,isClient,async (req:Request,res:Response)=>{
     }
 
 })
+
+router.get("/resumen",isAuth,async(req:Request,res:Response)=>{
+
+
+    const auth = req.body.auth
+    const user = {
+        id:auth.id,
+        rol:auth.rol
+    }
+
+    switch(auth.rol){
+        case Rol.ADMIN:
+            user as Admin;
+            break;
+        case Rol.USER:
+            user as Usuario;
+            break;
+        case Rol.CLIENT:
+            user as Cliente;
+            break;
+        default:
+            res.json({error:true,message:"Rol no soportado"})
+    }
+
+    try {
+
+        const datos = await usuarioUseCases.getResumenDatos(user);
+
+        res.json({data:datos})
+        
+    } catch (error) {
+        console.log(error)
+        const errorMessage = error instanceof Error? error.message : 'Error al obtener usuarios, intentelo de nuevo más tarde';
+        res.status(500).json({error:true,message:errorMessage})
+    }
+
+})
 export {router}

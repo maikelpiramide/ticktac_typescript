@@ -112,4 +112,9 @@ export default class UsuarioUseCases{
     {
         return await this.usuarioRepository.getAdminsByClient(cliente)
     }
+
+    async getResumenDatos(usuario:Usuario|Admin|Cliente):Promise<Array<any>>
+    {
+        return await this.usuarioRepository.getResumenDatos(usuario);
+    }
 }

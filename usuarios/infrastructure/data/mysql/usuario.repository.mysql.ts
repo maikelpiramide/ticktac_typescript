@@ -4,6 +4,7 @@ import { getMySqlConnection } from "../../../../context/MysqlConnector";
 import Usuario from "../../../domain/Usuario";
 import Cliente from "../../../domain/Cliente";
 import Rol from "../../../../roles/domain/Rol";
+import { DateTime } from "luxon";
 export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     
     async registrarAdmin(admin: Admin): Promise<Admin> {
@@ -303,6 +304,91 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
             nombre:admin.nombre,
             email:admin.email
         }))
+
+    }
+    async getResumenDatos(usuario: Usuario | Admin | Cliente): Promise<Array<any>> {
+
+        const connection = await getMySqlConnection();
+
+        let query = `
+            SELECT 
+                DATE(ts) AS fecha,
+                id_estado,
+                COUNT(*) AS cantidad
+            FROM ticket
+            WHERE 
+                ts >= DATE_FORMAT(CURDATE(), '%Y-%m-01') 
+                AND ts <= CURDATE()
+        `;
+
+        const params: any[] = [];
+
+        if (usuario.rol === Rol.ADMIN) {
+            query += ` AND id_admin = ?`;
+            params.push(usuario.id);
+        } else if (usuario.rol === Rol.USER) {
+            query += ` AND id_usuario = ?`;
+            params.push(usuario.id);
+        } else if (usuario.rol === Rol.CLIENT) {
+            query += ` AND id_cliente = ?`;
+            params.push(usuario.id);
+        }
+
+        query += `
+            GROUP BY fecha, id_estado
+            ORDER BY fecha;
+        `;
+
+        // Ejecutamos la consulta
+        const [rows]: any[] = await connection.query(query, params);
+
+        // Obtenemos los estados
+        const [estados]: any[] = await connection.query("SELECT id, nombre FROM estado");
+
+        // Mapeamos id_estado -> nombre
+        const estadosMap: Record<number, string> = {};
+        estados.forEach((estado: any) => {
+            estadosMap[estado.id] = estado.nombre.toLowerCase();
+        });
+
+        // Fechas desde el 1 del mes hasta hoy
+        const hoy = DateTime.now();
+        const inicioMes = hoy.startOf('month');
+        const fechasDelMes: string[] = [];
+        for (let fecha = inicioMes; fecha <= hoy; fecha = fecha.plus({ days: 1 })) {
+            fechasDelMes.push(fecha.toFormat('yyyy-MM-dd'));
+        }
+
+        // Inicializamos array resultado
+        const resultado: Array<{ estado: string, datos: { fecha: string, cantidad: number }[] }> = [];
+
+        // Por cada estado inicializamos el array de datos con 0
+        Object.values(estadosMap).forEach(estadoNombre => {
+            resultado.push({
+                estado: estadoNombre,
+                datos: fechasDelMes.map(fecha => ({ fecha, cantidad: 0 }))
+            });
+        });
+
+        // Rellenamos los datos con los resultados del query
+        for (const row of rows) {
+            const estadoNombre = estadosMap[row.id_estado];
+            if (!estadoNombre) continue;
+
+            const fechaStr = DateTime.fromJSDate(row.fecha).toFormat('yyyy-MM-dd');
+
+            // Buscamos el objeto estado en resultado
+            const estadoObj = resultado.find(r => r.estado === estadoNombre);
+            if (!estadoObj) continue;
+
+            // Buscamos la fecha y actualizamos cantidad
+            const fechaIndex = estadoObj.datos.findIndex(d => d.fecha === fechaStr);
+            if (fechaIndex !== -1) {
+                estadoObj.datos[fechaIndex].cantidad = row.cantidad;
+            }
+        }
+
+        return resultado;
 
     }
 
