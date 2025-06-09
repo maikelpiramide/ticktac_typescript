@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
 DELETE FROM `admin`;
 INSERT INTO `admin` (`id`, `nombre`, `email`, `password`, `rol`, `id_plan`, `id_tipo_pago`, `inicio_plan`, `activo`, `id_calendario`) VALUES
 	(2, 'admin', 'admin@gmail.com', '$2b$10$zW1Vzcq.5wvLFscNyneW3.x3aa430guTr4Fn5VEcfJiMhX5W7x9Ae', 'ADMIN', 2, 2, '2025-04-13 19:24:45', 1, 1),
-	(3, 'admin', 'adminpruebas@gmail.com', '$2b$10$hLAllstz652NXnDPGi00bO3mHP90nh/t.U53yKyad5UT82S1xQMkG', 'ADMIN', 3, 1, '2025-04-14 18:05:43', 1, 1),
+	(3, 'admin', 'adminpruebas@gmail.com', '$2b$10$hLAllstz652NXnDPGi00bO3mHP90nh/t.U53yKyad5UT82S1xQMkG', 'ADMIN', 3, 1, '2025-04-14 18:05:43', 1, 4),
 	(4, 'pruebas', 'pruebas@gmail.com', '$2b$10$FIGsza2VkOTD.afKCAtFVOyg1z4F3aSe13gkAbERTxt9FtcCGV1Nm', 'ADMIN', 2, 2, '2025-05-16 21:15:38', 1, 1);
 
 -- Dumping structure for table ticktac.calendario
@@ -53,13 +53,14 @@ CREATE TABLE IF NOT EXISTS `calendario` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) NOT NULL DEFAULT 'calendario',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table ticktac.calendario: ~0 rows (approximately)
+-- Dumping data for table ticktac.calendario: ~3 rows (approximately)
 DELETE FROM `calendario`;
 INSERT INTO `calendario` (`id`, `nombre`) VALUES
 	(1, 'calendario admin1'),
-	(3, 'calendario furiosa');
+	(3, 'calendario furiosa'),
+	(4, 'test');
 
 -- Dumping structure for table ticktac.cliente
 CREATE TABLE IF NOT EXISTS `cliente` (
@@ -118,14 +119,15 @@ CREATE TABLE IF NOT EXISTS `estado` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena el estado de los tickets';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena el estado de los tickets';
 
--- Dumping data for table ticktac.estado: ~3 rows (approximately)
+-- Dumping data for table ticktac.estado: ~4 rows (approximately)
 DELETE FROM `estado`;
 INSERT INTO `estado` (`id`, `nombre`) VALUES
 	(1, 'Nuevo'),
-	(2, 'Pendinte'),
-	(3, 'Cerrado');
+	(2, 'Pendiente usuario'),
+	(3, 'Cerrado'),
+	(4, 'Pendiente cliente');
 
 -- Dumping structure for table ticktac.evento
 CREATE TABLE IF NOT EXISTS `evento` (
@@ -139,12 +141,20 @@ CREATE TABLE IF NOT EXISTS `evento` (
   PRIMARY KEY (`id`),
   KEY `FK_evento_calendario` (`id_calendario`),
   CONSTRAINT `FK_evento_calendario` FOREIGN KEY (`id_calendario`) REFERENCES `calendario` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table ticktac.evento: ~1 rows (approximately)
 DELETE FROM `evento`;
 INSERT INTO `evento` (`id`, `nombre`, `fecha_ini`, `fecha_fin`, `color`, `id_calendario`, `ts`) VALUES
-	(1, 'pruebas admin', '2025-06-08 13:52:03', '2025-06-08 13:52:04', '#ffffff', 1, '2025-06-08 13:52:15');
+	(1, 'pruebas edit mod', '2025-06-11 18:25:00', '2025-06-11 23:59:00', '#a467d5', 1, '2025-06-08 13:52:15'),
+	(4, 'Evento large', '2025-06-09 12:00:00', '2025-06-12 12:30:00', '#af2e0d', 1, '2025-06-09 17:20:52'),
+	(13, 'pruebas mod', '2025-06-13 12:00:00', '2025-06-14 14:00:00', '#c0bfbf', 1, '2025-06-09 19:25:45'),
+	(14, 'nueva pruebas edit', '2025-06-17 00:00:00', '2025-06-17 23:59:00', '#000000', 1, '2025-06-09 19:27:36'),
+	(15, 'asdf editado', '2025-06-18 00:00:00', '2025-06-18 23:59:00', '#000000', 1, '2025-06-09 19:29:32'),
+	(16, 'evento de prueba', '2025-06-26 08:00:00', '2025-06-27 14:00:00', '#ffffff', 1, '2025-06-09 19:51:59'),
+	(17, 'para editar y eliminar', '2025-06-15 08:00:00', '2025-06-15 08:00:00', '#c8acac', 1, '2025-06-09 20:23:34'),
+	(18, 'pruebas', '2025-06-05 08:00:00', '2025-06-05 08:00:00', '#ffffff', 1, '2025-06-09 20:26:55'),
+	(19, 'pruebas', '2025-06-06 08:00:00', '2025-06-06 08:30:00', '#000000', 1, '2025-06-09 20:29:28');
 
 -- Dumping structure for table ticktac.mensaje
 CREATE TABLE IF NOT EXISTS `mensaje` (
@@ -157,15 +167,19 @@ CREATE TABLE IF NOT EXISTS `mensaje` (
   PRIMARY KEY (`id`),
   KEY `FK_mensaje_ticket` (`id_ticket`),
   CONSTRAINT `FK_mensaje_ticket` FOREIGN KEY (`id_ticket`) REFERENCES `ticket` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena los mensajes de los tickets';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena los mensajes de los tickets';
 
--- Dumping data for table ticktac.mensaje: ~0 rows (approximately)
+-- Dumping data for table ticktac.mensaje: ~4 rows (approximately)
 DELETE FROM `mensaje`;
 INSERT INTO `mensaje` (`id`, `texto`, `autor`, `id_ticket`, `ts`, `id_autor`) VALUES
 	(1, 'asdfasdf', 'ADMIN', 8, '2025-06-08 13:37:20', 2),
 	(2, 'sdfafd', 'ADMIN', 9, '2025-06-08 13:38:14', 2),
 	(3, 'no entiendo nada', 'CLIENT', 9, '2025-06-08 13:38:24', 1),
-	(4, 'eso es problema tuyo', 'ADMIN', 9, '2025-06-08 13:38:32', 2);
+	(4, 'eso es problema tuyo', 'ADMIN', 9, '2025-06-08 13:38:32', 2),
+	(5, 'Pruebas internas', 'ADMIN', 10, '2025-06-09 20:40:52', 2),
+	(6, 'pruebas', 'ADMIN', 11, '2025-06-09 20:41:57', 2),
+	(7, 'furiosa solucioa el problema', 'ADMIN', 10, '2025-06-09 21:59:10', 2),
+	(8, 'en nada lo hago', 'USER', 10, '2025-06-09 21:59:17', 4);
 
 -- Dumping structure for table ticktac.plan
 CREATE TABLE IF NOT EXISTS `plan` (
@@ -205,9 +219,9 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   CONSTRAINT `FK_tiket_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`),
   CONSTRAINT `FK_tiket_estado` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id`),
   CONSTRAINT `FK_tiket_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los tickets';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los tickets';
 
--- Dumping data for table ticktac.ticket: ~0 rows (approximately)
+-- Dumping data for table ticktac.ticket: ~7 rows (approximately)
 DELETE FROM `ticket`;
 INSERT INTO `ticket` (`id`, `asunto`, `id_estado`, `id_cliente`, `id_usuario`, `id_admin`, `activo`, `ts`) VALUES
 	(3, 'pruebas admin', 1, 1, NULL, 2, 1, '2025-05-10 12:28:31'),
@@ -216,7 +230,9 @@ INSERT INTO `ticket` (`id`, `asunto`, `id_estado`, `id_cliente`, `id_usuario`, `
 	(6, 'asdfasdfasdf', 1, 1, 4, 2, 1, '2025-06-08 13:32:12'),
 	(7, 'para admin', 1, 1, NULL, 2, 1, '2025-06-08 13:32:41'),
 	(8, 'prueas', 1, 4, 2, 2, 1, '2025-06-08 13:37:20'),
-	(9, 'para cliente 1', 1, 1, NULL, 2, 1, '2025-06-08 13:38:14');
+	(9, 'mod', 1, 1, NULL, 2, 1, '2025-06-08 13:38:14'),
+	(10, 'probando ticket', 1, 1, 4, 2, 1, '2025-06-09 20:40:52'),
+	(11, 'asdfasdf', 2, 1, NULL, 2, 1, '2025-06-09 20:41:57');
 
 -- Dumping structure for table ticktac.tipo_pago
 CREATE TABLE IF NOT EXISTS `tipo_pago` (
@@ -255,7 +271,7 @@ INSERT INTO `usuario` (`id`, `nombre`, `email`, `password`, `rol`, `id_admin`, `
 	(1, 'maikel', 'maikel@pruebas.com', '$2b$10$IOUuXAFSPpwrnZp38i6YfOxa4QYiQaLelznVk9mV/TsIMjimM2xTO', 'USER', 2, 1, 1),
 	(2, 'sara', 'sara@gmail.com', '$2b$10$Zzubr/.YEI7KhtkkT9.1Qe4gI0iWAncFZFRMQVng6HS0/TKzMjqWO', 'USER', 2, 1, 1),
 	(3, 'jota', 'jota@gmail.com', '$2b$10$GxmpX8qJEGT5EiSpHpt5KeiEGAUfR/lDTkUWLzEmTpvb9NsDYmAHa', 'USER', 2, 1, 1),
-	(4, 'furiosa', 'furiosa@gmail.com', '$2b$10$KWy1WJff8CXx/p5dF3TuGeA2YzaSwK0qXRR./9vhy/XN6n9kNRmmS', 'USER', 2, 1, 1);
+	(4, 'furiosa', 'furiosa@gmail.com', '$2b$10$KWy1WJff8CXx/p5dF3TuGeA2YzaSwK0qXRR./9vhy/XN6n9kNRmmS', 'USER', 2, 1, 4);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
