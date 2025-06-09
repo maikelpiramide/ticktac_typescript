@@ -16,7 +16,7 @@ export default class CalendarioUseCases{
         return await this.calendarioRepository.getByUser(usuario);
     }
     
-    async setMensaje(usuario:Usuario|Admin,evento:Evento):Promise<Evento>
+    async setEvento(usuario:Usuario|Admin,evento:Evento):Promise<Evento>
     {
         return await this.calendarioRepository.setEvento(usuario,evento)
     }

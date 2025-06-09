@@ -68,6 +68,24 @@ export default class CalendarioRepositoryMysql implements CalendarioRepository{
     }
 
     async setEvento(usuario: Usuario | Admin, evento: Evento): Promise<Evento> {
+        const connection = getMySqlConnection()
+        const calendario:Calendario={}
+        if(usuario.rol == Rol.ADMIN){
+            const [user]:any = await connection.query("select id_calendario from admin where id = ?",[usuario.id])
+            if(user.length === 0) throw new Error("no se ha podido obtener el calendario del usuario")
+            
+            calendario.id = user[0].id_calendario
+        }else{
+            const [user]:any = await connection.query("select id_calendario from usuario where id = ?",[usuario.id])
+            if(user.length === 0) throw new Error("no se ha podido obtener el calendario del usuario")
+            
+            calendario.id = user[0].id_calendario
+        }
+        const [event]:any = await connection.query(`
+            insert into evento (nombre,fecha_ini,fecha_fin,color,id_calendario) values (?,?,?,?,?)
+        `,[evento.nombre,evento.fechaIni,evento.fechaFin,evento.color,calendario.id])
+        if(!event.insertId) throw new Error("no se ha podido crear el evento")
+        evento.id = event.insertId
         return evento;
     }
 
