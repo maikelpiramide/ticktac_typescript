@@ -14,6 +14,21 @@ const route = express.Router()
 
 const calendarioUseCases:CalendarioUseCases = new CalendarioUseCases(new CalendarioRepositoryMysql())
 
+
+const setDiferentHora = (hora:String)=>{
+    const [h, m] = hora.split(":").map(Number);
+
+    const date = new Date();
+    date.setHours(h);
+    date.setMinutes(m + 1); // Sumar un minuto
+
+    // Formatear a "HH:mm"
+    const hh = date.getHours().toString().padStart(2, "0");
+    const mm = date.getMinutes().toString().padStart(2, "0");
+
+    return `${hh}:${mm}`;
+}
+
 route.get("/calendario",isAuth,async(req:Request,res:Response)=>{
 
     const auth = req.body.auth
@@ -82,9 +97,8 @@ route.post("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:R
         
         const fechaIniSet = DateTime.fromFormat(`${data.fechaIni} ${data.horaIni}`,"yyyy-MM-dd HH:mm",{zone:"Europe/Madrid"})
 
-        const fechaFinSet = DateTime.fromFormat(`${data.fechaFin} ${data.horaFin}`, 'yyyy-MM-dd HH:mm', { zone: 'Europe/Madrid' })
+        const fechaFinSet = DateTime.fromFormat(`${data.fechaFin} ${data.horaFin == data.horaIni ? setDiferentHora(data.horaFin) : data.horaFin}`, 'yyyy-MM-dd HH:mm', { zone: 'Europe/Madrid' })
 
-        //res.json({error:false,fechaFinSet,fechaIniSet,pruebas})
         const evento:Evento ={
             nombre:data.nombre,
             fechaIni:fechaIniSet.toJSDate(),
@@ -108,4 +122,58 @@ route.post("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:R
     }
 })
 
+route.put("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:Response)=>{
+
+
+    const data = req.body
+
+    const fechaIniSet = DateTime.fromFormat(`${data.fechaIni} ${data.horaIni}`,"yyyy-MM-dd HH:mm",{zone:"Europe/Madrid"})
+
+    const fechaFinSet = DateTime.fromFormat(`${data.fechaFin} ${data.horaFin}`, 'yyyy-MM-dd HH:mm', { zone: 'Europe/Madrid' })
+    const event:Evento= {
+        id:data.id,
+        fechaIni:fechaIniSet.toJSDate(),
+        fechaFin:fechaFinSet.toJSDate(),
+        nombre:data.nombre,
+        color:data.color
+    }
+
+    try {
+        
+        const eventDb = await calendarioUseCases.updateEvento(event);
+        const eventFormat = {
+            id:eventDb.id,
+            start:eventDb.fechaIni,
+            end:eventDb.fechaFin,
+            title:eventDb.nombre,
+            color:eventDb.color
+        }
+
+        res.json({error:false,message:"Evento actualizado con éxito",data:eventFormat})
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al crear el evento';
+        res.status(500).json({ error: true, message: errorMessage });
+    }
+
+})
+
+route.delete("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:Response)=>{
+
+    const data = req.body
+
+    const evento:Evento={
+        id : data.id
+    }
+
+    try {
+
+        const message = await calendarioUseCases.removeEvento(evento)
+        res.json({error:false,message})
+        
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al crear el evento';
+        res.status(500).json({ error: true, message: errorMessage });
+    }
+
+})
 export {route}

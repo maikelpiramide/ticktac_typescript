@@ -89,4 +89,24 @@ export default class CalendarioRepositoryMysql implements CalendarioRepository{
         return evento;
     }
 
+    async updateEvento(evento:Evento):Promise<Evento>
+    {
+        const connection = getMySqlConnection()
+        const [event]:any = await connection.query(`
+            update evento set nombre = ?, fecha_ini = ?,fecha_fin = ?,color = ? where id = ?
+        `,[evento.nombre,evento.fechaIni,evento.fechaFin,evento.color,evento.id])
+            
+        if(event.affectedRows == 0) throw new Error("No se ha podido actualizar el evento")
+        
+        return evento;
+    }
+
+    async removeEvento(evento: Evento): Promise<String> {
+        const connection = getMySqlConnection()
+        const [result]:any = await connection.query(`
+            delete from evento where id = ?
+        `,[evento.id])
+        if(result.affectedRows == 0) throw new Error("No se ha podido eliminar el evento")
+        return "Evento eliminado correctamente"
+    }
 }

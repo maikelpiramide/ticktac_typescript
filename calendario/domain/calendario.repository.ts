@@ -7,4 +7,6 @@ import Calendario from "./Calendario";
 export default interface CalendarioRepository{
     getByUser(usuario:Usuario | Admin | Cliente):Promise<Calendario>;
     setEvento(usuario:Usuario | Admin,evento:Evento):Promise<Evento>;
+    updateEvento(evento:Evento):Promise<Evento>;
+    removeEvento(evento:Evento):Promise<String>
 }

@@ -21,5 +21,14 @@ export default class CalendarioUseCases{
         return await this.calendarioRepository.setEvento(usuario,evento)
     }
 
+    async updateEvento(evento:Evento):Promise<Evento>
+    {
+        return await this.calendarioRepository.updateEvento(evento);
+    }
+    async removeEvento(evento:Evento):Promise<String>
+    {
+        return await this.calendarioRepository.removeEvento(evento)
+    }
+
 
 }
