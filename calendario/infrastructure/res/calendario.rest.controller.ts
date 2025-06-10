@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { isAdmin, isAuth, isUser } from "../../../context/security/auth";
+import { isAdmin, isAuth, isUser,isAdminOrUser } from "../../../context/security/auth";
 import CalendarioUseCases from "../../application/calendario.usecases";
 import CalendarioRepositoryMysql from "../data/mysql/calendario.repository.mysql";
 import Rol from "../../../roles/domain/Rol";
@@ -74,7 +74,7 @@ route.get("/calendario",isAuth,async(req:Request,res:Response)=>{
     }
 
 })
-route.post("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:Response)=>{
+route.post("/calendario/evento",isAuth,isAdminOrUser,async(req:Request,res:Response)=>{
 
     const auth = req.body.auth
     const data = req.body
@@ -122,7 +122,7 @@ route.post("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:R
     }
 })
 
-route.put("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:Response)=>{
+route.put("/calendario/evento",isAuth,isAdminOrUser,async(req:Request,res:Response)=>{
 
 
     const data = req.body
@@ -157,7 +157,7 @@ route.put("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:Re
 
 })
 
-route.delete("/calendario/evento",isAuth,isAdmin || isUser,async(req:Request,res:Response)=>{
+route.delete("/calendario/evento",isAuth,isAdminOrUser,async(req:Request,res:Response)=>{
 
     const data = req.body
 
