@@ -109,4 +109,15 @@ export default class CalendarioRepositoryMysql implements CalendarioRepository{
         if(result.affectedRows == 0) throw new Error("No se ha podido eliminar el evento")
         return "Evento eliminado correctamente"
     }
+
+    async crearCalendario(usuario: Usuario | Admin): Promise<Calendario> {
+        const connection = getMySqlConnection()
+        const [c]:any = await connection.query("insert into calendario (nombre) values (?)",[usuario.nombre])
+        if(!c.insertId) throw new Error("no se ha podido crear el calendario del usuario")
+        const cal:Calendario={
+            id:c.insertId,
+            nombre:usuario.nombre
+        }
+        return cal;
+    }
 }

@@ -30,5 +30,10 @@ export default class CalendarioUseCases{
         return await this.calendarioRepository.removeEvento(evento)
     }
 
+    async crearCalendario(usuario:Usuario | Admin):Promise<Calendario>
+    {
+        return await this.calendarioRepository.crearCalendario(usuario)
+    }
+
 
 }

@@ -9,4 +9,5 @@ export default interface CalendarioRepository{
     setEvento(usuario:Usuario | Admin,evento:Evento):Promise<Evento>;
     updateEvento(evento:Evento):Promise<Evento>;
     removeEvento(evento:Evento):Promise<String>
+    crearCalendario(usuario:Usuario|Admin):Promise<Calendario>
 }

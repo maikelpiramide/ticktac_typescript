@@ -10,7 +10,7 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     async registrarAdmin(admin: Admin): Promise<Admin> {
         const connection = getMySqlConnection();
 
-        const [result]:any = await connection.query("INSERT INTO admin (nombre,email,password,id_plan,id_tipo_pago,inicio_plan) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP())",[admin.nombre,admin.email,admin.password,admin.plan?.id,admin.tipoPago?.id])
+        const [result]:any = await connection.query("INSERT INTO admin (nombre,email,password,id_plan,id_tipo_pago,inicio_plan,id_calendario) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP())",[admin.nombre,admin.email,admin.password,admin.plan?.id,admin.tipoPago?.id,admin.calendario?.id])
 
         console.warn(result)
         return admin;
@@ -40,7 +40,7 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
             return user;
         };
 
-        const [result]:any = await connection.query("INSERT INTO usuario (nombre, email, password,id_admin) VALUES (?,?,?,?)",[usuario.nombre, usuario.email, usuario.password,admin.id]);
+        const [result]:any = await connection.query("INSERT INTO usuario (nombre, email, password,id_admin,id_calendario) VALUES (?,?,?,?,?)",[usuario.nombre, usuario.email, usuario.password,admin.id,usuario.calendario?.id]);
         if(!result.insertId) throw new Error("No se pudo crear el usuario");
         usuario.id = result.insertId;
         return usuario;

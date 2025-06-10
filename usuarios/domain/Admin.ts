@@ -1,3 +1,4 @@
+import Calendario from "../../calendario/domain/Calendario";
 import { Plan } from "../../planes/domain/Plan";
 import TipoPago from "../../tipospago/domain/TipoPago";
 
@@ -10,4 +11,5 @@ export default class Admin {
     plan?:Plan;
     tipoPago?:TipoPago;
     inicioPlan?:Date;
+    calendario?:Calendario
 }

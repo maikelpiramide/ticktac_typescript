@@ -12,7 +12,7 @@ export default class UsuarioUseCases{
 
         if(!admin.email) throw new Error("El usuario no tiene email")
         if(!admin.password) throw new Error("El usuario no tiene contraseña")
-
+        
         const encriptedPassword = hash(admin.password)
         admin.password = encriptedPassword
         const usuarioRegistrado = await this.usuarioRepository.registrarAdmin(admin)

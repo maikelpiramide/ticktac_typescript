@@ -7,9 +7,12 @@ import { Plan } from "../../../planes/domain/Plan"
 import Usuario from "../../domain/Usuario"
 import Cliente from "../../domain/Cliente"
 import Rol from "../../../roles/domain/Rol"
+import CalendarioUseCases from "../../../calendario/application/calendario.usecases"
+import CalendarioRepositoryMysql from "../../../calendario/infrastructure/data/mysql/calendario.repository.mysql"
+import Calendario from "../../../calendario/domain/Calendario"
 
 const usuarioUseCases:UsuarioUseCases = new UsuarioUseCases(new UsuarioRepositoryMyslq()) 
-
+const calendarioUseCases:CalendarioUseCases = new CalendarioUseCases(new CalendarioRepositoryMysql())
 const router = express.Router()
 
 router.post("/admin/registro/isExist",async(req:Request,res:Response)=>{
@@ -59,7 +62,8 @@ router.post("/admin/registro",async(req:Request,res:Response)=>{
         tipoPago:tipoPago,
     }
     try {
-        
+        const calendario:Calendario = await calendarioUseCases.crearCalendario(admin);
+        admin.calendario = calendario
         const adminRegistrado = await usuarioUseCases.registrarAdmnin(admin)
         
         res.status(201).json({error:false,message:"Su cuenta ha sido registrada correctamente",data:adminRegistrado})
@@ -83,6 +87,8 @@ router.post("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
        password:data.password, 
     }
     try {
+        const calendario:Calendario = await calendarioUseCases.crearCalendario(admin);
+        usuario.calendario = calendario
         const usuarioRegistrado = await usuarioUseCases.crearUsuario(usuario,admin)
         const {id,email,nombre}=usuarioRegistrado
         res.status(201).json({error:false,message:"Usuario registrado correctamente",data:{id,email,nombre}})
