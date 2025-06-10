@@ -99,9 +99,9 @@ app.use(api,routeCalendario);
 
 // Configuración de HTTPS
 const httpsOptions = {
-  key: fs.readFileSync('./backendticktask.maikel.daw.cpifppiramide.com/privkey.pem'),
-  cert: fs.readFileSync('./backendticktask.maikel.daw.cpifppiramide.com/cert.pem'),
-  ca: fs.readFileSync('./backendticktask.maikel.daw.cpifppiramide.com/chain.pem') 
+  key: fs.readFileSync('./privkey.pem'),
+  cert: fs.readFileSync('./cert.pem'),
+  ca: fs.readFileSync('./chain.pem') 
 };
 const server = https.createServer(httpsOptions,app);
 const io = initSocket(server);
