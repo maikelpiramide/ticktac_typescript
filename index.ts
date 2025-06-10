@@ -72,6 +72,7 @@ const api = "/api";
 const options: cors.CorsOptions = {
   origin: [
     "http://localhost:5173",
+    "*",
     "https://master.d2achkkcebk0hr.amplifyapp.com",
     "https://ticktask.maikel.daw.cpifppiramide.com"
   ]
