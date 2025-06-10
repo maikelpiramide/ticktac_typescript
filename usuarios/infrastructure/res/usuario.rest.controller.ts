@@ -64,6 +64,7 @@ router.post("/admin/registro",async(req:Request,res:Response)=>{
     try {
         const calendario:Calendario = await calendarioUseCases.crearCalendario(admin);
         admin.calendario = calendario
+
         const adminRegistrado = await usuarioUseCases.registrarAdmnin(admin)
         
         res.status(201).json({error:false,message:"Su cuenta ha sido registrada correctamente",data:adminRegistrado})
@@ -87,7 +88,7 @@ router.post("/admin/usuario",isAuth,isAdmin,async(req:Request,res:Response)=>{
        password:data.password, 
     }
     try {
-        const calendario:Calendario = await calendarioUseCases.crearCalendario(admin);
+        const calendario:Calendario = await calendarioUseCases.crearCalendario(usuario);
         usuario.calendario = calendario
         const usuarioRegistrado = await usuarioUseCases.crearUsuario(usuario,admin)
         const {id,email,nombre}=usuarioRegistrado

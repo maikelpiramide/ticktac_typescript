@@ -10,7 +10,7 @@ export default class UsuarioRepositoryMyslq implements UsuarioRepository {
     async registrarAdmin(admin: Admin): Promise<Admin> {
         const connection = getMySqlConnection();
 
-        const [result]:any = await connection.query("INSERT INTO admin (nombre,email,password,id_plan,id_tipo_pago,inicio_plan,id_calendario) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP())",[admin.nombre,admin.email,admin.password,admin.plan?.id,admin.tipoPago?.id,admin.calendario?.id])
+        const [result]:any = await connection.query("INSERT INTO admin (nombre,email,password,id_plan,id_tipo_pago,inicio_plan,id_calendario) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP(),?)",[admin.nombre,admin.email,admin.password,admin.plan?.id,admin.tipoPago?.id,admin.calendario?.id])
 
         console.warn(result)
         return admin;
