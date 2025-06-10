@@ -79,6 +79,7 @@ const options: cors.CorsOptions = {
   ]
 };
 app.use(cors(options));
+app.use(express.json());
 // Configuración para acceder al body de las peticiones
 app.get("/", (req: Request, res: Response): void => {
     res.send("App ticktac corriendo");

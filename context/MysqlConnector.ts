@@ -12,9 +12,9 @@ export const initializeConnection = async (): Promise<void> => {
       //user: process.env.MYSQL_USER,
       //password: process.env.MYSQL_PASSWORD,
       //database: process.env.MYSQL_DATABASE,
-      host: "database-tfg.cfe62rndwl8t.us-east-1.rds.amazonaws.com",
-      user: "admin",
-      password: "Develop0crew$$",
+      host: "backendticktask.maikel.daw.cpifppiramide.com",
+      user: "develop",
+      password: "Code0crew$$",
       database: "ticktac",
     });
     console.log('Conexión a la base de datos MySql establecida');
