@@ -49,6 +49,8 @@ server.listen(process.env.SERVER_PORT,()=>{
     console.log(`servidor escuchando por el 8080`)
 })*/
 
+
+
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -73,7 +75,6 @@ const options: cors.CorsOptions = {
   origin: [
     "http://localhost:5173",
     "*",
-    "https://master.d2achkkcebk0hr.amplifyapp.com",
     "https://ticktask.maikel.daw.cpifppiramide.com"
   ]
 };
@@ -108,5 +109,5 @@ const server = https.createServer(httpsOptions,app);
 const io = initSocket(server);
 
 server.listen(443,()=>{
-    console.log('Servidor HTTPS corriendo en el puerto 8080');
+    console.log('Servidor HTTPS corriendo en el puerto 443');
 })
