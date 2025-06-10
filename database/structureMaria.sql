@@ -16,16 +16,20 @@
 
 
 -- Dumping database structure for ticktac
-CREATE DATABASE IF NOT EXISTS `ticktac` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE IF NOT EXISTS `ticktac` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+ */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `ticktac`;
 
 -- Dumping structure for table ticktac.admin
 CREATE TABLE IF NOT EXISTS `admin` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) DEFAULT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `rol` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'ADMIN',
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+ NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+ NOT NULL,
+  `rol` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+ NOT NULL DEFAULT 'ADMIN',
   `id_plan` int NOT NULL,
   `id_tipo_pago` int DEFAULT NULL,
   `inicio_plan` datetime NOT NULL,
@@ -39,7 +43,8 @@ CREATE TABLE IF NOT EXISTS `admin` (
   CONSTRAINT `FK_admin_calendario` FOREIGN KEY (`id_calendario`) REFERENCES `calendario` (`id`),
   CONSTRAINT `FK_admin_contrato` FOREIGN KEY (`id_plan`) REFERENCES `plan` (`id`),
   CONSTRAINT `FK_admin_tipo_pago` FOREIGN KEY (`id_tipo_pago`) REFERENCES `tipo_pago` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena el superusuario que sería el primer usuario de la empresa (gestiona usuarios trabajadores y clientes)';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='tabla que almacena el superusuario que sería el primer usuario de la empresa (gestiona usuarios trabajadores y clientes)';
 
 -- Dumping data for table ticktac.admin: ~4 rows (approximately)
 DELETE FROM `admin`;
@@ -54,7 +59,8 @@ CREATE TABLE IF NOT EXISTS `calendario` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) NOT NULL DEFAULT 'calendario',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+;
 
 -- Dumping data for table ticktac.calendario: ~8 rows (approximately)
 DELETE FROM `calendario`;
@@ -77,7 +83,8 @@ CREATE TABLE IF NOT EXISTS `cliente` (
   `rol` varchar(50) NOT NULL DEFAULT 'CLIENT',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacenan los clietnes de los usuarios (empresas)';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='tabla que almacenan los clietnes de los usuarios (empresas)';
 
 -- Dumping data for table ticktac.cliente: ~10 rows (approximately)
 DELETE FROM `cliente`;
@@ -105,7 +112,8 @@ CREATE TABLE IF NOT EXISTS `cliente_admin` (
   KEY `fk_cliente_admin_admin` (`id_admin`),
   CONSTRAINT `fk_cliente_admin_admin` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`),
   CONSTRAINT `FK_cliente_admin_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='relaciona los clientes con los administradores (empresas)';
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='relaciona los clientes con los administradores (empresas)';
 
 -- Dumping data for table ticktac.cliente_admin: ~9 rows (approximately)
 DELETE FROM `cliente_admin`;
@@ -125,7 +133,8 @@ CREATE TABLE IF NOT EXISTS `estado` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena el estado de los tickets';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='almacena el estado de los tickets';
 
 -- Dumping data for table ticktac.estado: ~3 rows (approximately)
 DELETE FROM `estado`;
@@ -147,7 +156,8 @@ CREATE TABLE IF NOT EXISTS `evento` (
   PRIMARY KEY (`id`),
   KEY `FK_evento_calendario` (`id_calendario`),
   CONSTRAINT `FK_evento_calendario` FOREIGN KEY (`id_calendario`) REFERENCES `calendario` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+;
 
 -- Dumping data for table ticktac.evento: ~9 rows (approximately)
 DELETE FROM `evento`;
@@ -166,7 +176,8 @@ INSERT INTO `evento` (`id`, `nombre`, `fecha_ini`, `fecha_fin`, `color`, `id_cal
 -- Dumping structure for table ticktac.mensaje
 CREATE TABLE IF NOT EXISTS `mensaje` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `texto` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `texto` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+,
   `autor` varchar(50) NOT NULL,
   `id_ticket` int NOT NULL,
   `ts` datetime NOT NULL DEFAULT (now()),
@@ -174,7 +185,8 @@ CREATE TABLE IF NOT EXISTS `mensaje` (
   PRIMARY KEY (`id`),
   KEY `FK_mensaje_ticket` (`id_ticket`),
   CONSTRAINT `FK_mensaje_ticket` FOREIGN KEY (`id_ticket`) REFERENCES `ticket` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena los mensajes de los tickets';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='almacena los mensajes de los tickets';
 
 -- Dumping data for table ticktac.mensaje: ~8 rows (approximately)
 DELETE FROM `mensaje`;
@@ -192,13 +204,15 @@ INSERT INTO `mensaje` (`id`, `texto`, `autor`, `id_ticket`, `ts`, `id_autor`) VA
 CREATE TABLE IF NOT EXISTS `plan` (
   `id` int NOT NULL AUTO_INCREMENT,
   `titulo` varchar(255) NOT NULL DEFAULT '',
-  `descripcion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `descripcion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+ NOT NULL,
   `usuarios` int NOT NULL COMMENT 'cantidad de usuarios máxima admintida',
   `clientes` int NOT NULL COMMENT 'cantidad de clientes máxima admintida',
   `mensual` decimal(20,2) NOT NULL DEFAULT '0.00',
   `anual` decimal(20,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los precios con su tipo (mensual, anual)  y desripción';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='tabla que almacena los precios con su tipo (mensual, anual)  y desripción';
 
 -- Dumping data for table ticktac.plan: ~3 rows (approximately)
 DELETE FROM `plan`;
@@ -226,7 +240,8 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   CONSTRAINT `FK_tiket_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`),
   CONSTRAINT `FK_tiket_estado` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id`),
   CONSTRAINT `FK_tiket_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los tickets';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='tabla que almacena los tickets';
 
 -- Dumping data for table ticktac.ticket: ~9 rows (approximately)
 DELETE FROM `ticket`;
@@ -246,7 +261,8 @@ CREATE TABLE IF NOT EXISTS `tipo_pago` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='almacena los tipos de pago, mensual o anual';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='almacena los tipos de pago, mensual o anual';
 
 -- Dumping data for table ticktac.tipo_pago: ~2 rows (approximately)
 DELETE FROM `tipo_pago`;
@@ -260,7 +276,8 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `nombre` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `rol` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'USER',
+  `rol` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+ NOT NULL DEFAULT 'USER',
   `id_admin` int NOT NULL,
   `activo` tinyint NOT NULL DEFAULT '1',
   `id_calendario` int NOT NULL,
@@ -270,7 +287,8 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   KEY `FK_user_calendario` (`id_calendario`),
   CONSTRAINT `FK_user_admin` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`),
   CONSTRAINT `FK_user_calendario` FOREIGN KEY (`id_calendario`) REFERENCES `calendario` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tabla que almacena los usuarios de la app (empresas)';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ COMMENT='tabla que almacena los usuarios de la app (empresas)';
 
 -- Dumping data for table ticktac.usuario: ~5 rows (approximately)
 DELETE FROM `usuario`;
