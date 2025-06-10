@@ -106,6 +106,6 @@ const httpsOptions = {
 const server = https.createServer(httpsOptions,app);
 const io = initSocket(server);
 
-server.listen(8080,()=>{
+server.listen(443,()=>{
     console.log('Servidor HTTPS corriendo en el puerto 8080');
 })
