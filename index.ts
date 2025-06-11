@@ -74,7 +74,7 @@ const api = "/api";
 const options: cors.CorsOptions = {
   origin: [
     "http://localhost:5173",
-    "*",
+    //"*",
     "https://ticktask.maikel.daw.cpifppiramide.com"
   ]
 };
