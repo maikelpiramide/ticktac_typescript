@@ -98,7 +98,6 @@ router.post("/ticket", isAuth, async (req: Request, res: Response) => {
                 }
                 const adminUser = await usuarioUseCases.getAdminByUser(user);
                 ticket.admin = adminUser
-                console.warn("adminUser ticket usuario",adminUser)
                 break;
             case Rol.CLIENT:
                 user = {
@@ -121,7 +120,7 @@ router.post("/ticket", isAuth, async (req: Request, res: Response) => {
             autor:user
         }
         let ticketdb = await ticketUseCases.crearTicket(ticket,mensaje);
-        console.warn("ticketdb",ticketdb);
+        //console.warn("ticketdb",ticketdb);
         // Emitir el evento new-ticket a las salas específicas
         const io = getIo();
         if (ticketdb.admin && ticketdb.admin.id) {
@@ -171,10 +170,13 @@ router.put("/ticket", isAuth, async (req: Request, res: Response) => {
                     }
                     ticket.usuario = u
                 }
-                const c:Cliente = {
-                    id:data.cliente
+                if(data.cliente){
+                    const c:Cliente = {
+                        id:data.cliente
+                    }
+                    ticket.cliente = c
                 }
-                ticket.cliente = c
+                
                 break;
             case Rol.USER:
                 user = {
@@ -190,7 +192,7 @@ router.put("/ticket", isAuth, async (req: Request, res: Response) => {
                 }
                 const adminUser = await usuarioUseCases.getAdminByUser(user);
                 ticket.admin = adminUser
-                console.warn("adminUser ticket usuario",adminUser)
+                //console.warn("adminUser ticket usuario",adminUser)
                 break;
             case Rol.CLIENT:
                 user = {
@@ -221,7 +223,11 @@ router.put("/ticket", isAuth, async (req: Request, res: Response) => {
             }else{
                 io.to(`admin-${ticketdb.admin.id}`).emit("edit-ticket", ticketdb);
             }
+        }else{
+            if(originalTicket.admin && originalTicket.admin.id)
+                io.to(`admin-${originalTicket.admin.id}`).emit("delete-ticket", ticketdb);
         }
+
         if (ticketdb.usuario && ticketdb.usuario.id) {
             console.log(`Emitiendo a user-${ticketdb.usuario.id}`);
             if(Number(originalTicket.usuario?.id) != Number(ticketdb.usuario.id)){
@@ -230,7 +236,13 @@ router.put("/ticket", isAuth, async (req: Request, res: Response) => {
             }else{
                 io.to(`user-${ticketdb.usuario.id}`).emit("edit-ticket", ticketdb);
             }
+        }else{
+              console.log(`Emitiendo a user-${originalTicket.usuario?.id}`);
+            if(originalTicket.usuario && originalTicket.usuario.id)
+                io.to(`user-${originalTicket.usuario.id}`).emit("delete-ticket", ticketdb);
+            
         }
+
         if (ticketdb.cliente && ticketdb.cliente.id) {
             console.log(`Emitiendo a client-${ticketdb.cliente.id}`);
             if(originalTicket.cliente?.id!= ticketdb.cliente.id){
@@ -239,6 +251,10 @@ router.put("/ticket", isAuth, async (req: Request, res: Response) => {
             }else{
                 io.to(`client-${ticketdb.cliente.id}`).emit("edit-ticket", ticketdb);
             }
+        }else{
+            if(originalTicket.cliente && originalTicket.cliente.id)
+                io.to(`client-${originalTicket.cliente.id}`).emit("delete-ticket", ticketdb);
+
         }
 
         res.json({error:false,data:ticketdb,message:"Ticket editado correctamente"});

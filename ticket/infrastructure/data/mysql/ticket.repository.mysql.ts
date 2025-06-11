@@ -15,9 +15,9 @@ export default class TicketRepositoryMysql implements TicketRepository{
             SELECT t.id,t.asunto, t.ts,state.id AS id_estado,state.nombre AS nombre_estado,c.email AS email_cliente, c.id as id_cliente,a.email as email_admin,a.id as id_admin, u.email as email_usuario, u.id as id_usuario FROM ticket AS t
             JOIN estado AS state
             ON state.id = t.id_estado
-            JOIN cliente AS c
+            left JOIN cliente AS c
             ON c.id = t.id_cliente
-            JOIN admin AS a
+            left JOIN admin AS a
             ON a.id = t.id_admin
             LEFT JOIN usuario AS u
             ON u.id = t.id_usuario
@@ -60,9 +60,9 @@ export default class TicketRepositoryMysql implements TicketRepository{
             SELECT t.id,t.asunto, t.ts,state.id AS id_estado,state.nombre AS nombre_estado,c.email AS email_cliente,c.id as id_cliente,a.email as email_admin, a.id as id_admin, u.email as email_usuario, u.id as id_usuario FROM ticket AS t
             JOIN estado AS state
             ON state.id = t.id_estado
-            JOIN cliente AS c
+            left JOIN cliente AS c
             ON c.id = t.id_cliente
-            JOIN admin AS a
+            left JOIN admin AS a
             ON a.id = t.id_admin
             LEFT JOIN usuario AS u
             ON u.id = t.id_usuario
@@ -112,8 +112,9 @@ export default class TicketRepositoryMysql implements TicketRepository{
 
     }
     async crearTicket(ticket: Ticket) {
+        //console.warn("ticken en rapo",ticket)
         const connection = getMySqlConnection();
-        const [result]:any = await connection.query('INSERT INTO ticket (asunto,id_usuario,id_cliente,id_admin,id_estado) values (?,?,?,?,?)',[ticket.asunto,ticket.usuario?.id,ticket.cliente?.id,ticket.admin?.id,ticket.estado?.id]);
+        const [result]:any = await connection.query('INSERT INTO ticket (asunto,id_usuario,id_cliente,id_admin,id_estado) values (?,?,?,?,?)',[ticket.asunto,ticket.usuario ? ticket.usuario.id:null,ticket.cliente ? ticket.cliente.id : null,ticket.admin ? ticket.admin.id : null,ticket.estado?.id]);
         if(!result.insertId) throw new Error('No se pudo crear el ticket');
         ticket.id = result.insertId;
         return this.getById(ticket);
@@ -121,8 +122,8 @@ export default class TicketRepositoryMysql implements TicketRepository{
 
     async editTicket(ticket: Ticket): Promise<Ticket> {
         const connection = getMySqlConnection();
-        console.warn("ticket",ticket)
-        await connection.query('UPDATE ticket SET asunto = ?, id_estado = ?, id_admin = ?, id_cliente = ?, id_usuario = ? WHERE id = ?',[ticket.asunto,ticket.estado?.id,ticket.admin?.id,ticket.cliente?.id,ticket.usuario?.id,ticket.id]);
+        //console.warn("ticket edit",ticket)
+        await connection.query('UPDATE ticket SET asunto = ?, id_estado = ?, id_admin = ?, id_cliente = ?, id_usuario = ? WHERE id = ?',[ticket.asunto,ticket.estado?.id,ticket.admin?ticket.admin.id:null,ticket.cliente? ticket.cliente.id : null,ticket.usuario? ticket.usuario.id:null,ticket.id]);
         return this.getById(ticket);
     }
 }
